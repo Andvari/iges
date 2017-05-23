@@ -3,52 +3,74 @@ from entities import *
 
 f = open("cube.IGS", "r")
 
+def prefix(l):
+    if l > 1:
+        print("|  ", end = "", sep = "")
+    if l > 2:
+        print("   "*(l-2), end = "", sep = "")
+
+
 def process_entity(l, de, pd, e):
     #print("    "*l, l+1)
-    print("    "*l, "Entity: ", entity[pd[e[1]][1]])
-    print("  "*l, "DE: ", e)
-    print("  "*l, "PD: ", pd[e[1]])
+    prefix(l)
+    print("+--", "Entity: ", entity[pd[e[1]][1]], sep = "")
+    #print("DE: ", e)
+    #print("PD: ", pd[e[1]])
 
 
 
     if entity[pd[e[1]][1]] == "Color Definition":
-        print("    "*l, "Red: ", pd[e[1]][2], "%")
-        print("    "*l, "Green: ", pd[e[1]][3], "%")
-        print("    "*l, "Blue: ", pd[e[1]][4], "%")
+        prefix(l+1)
+        print("+--", "Red: ", pd[e[1]][2], "%", sep = "")
+        prefix(l+1)
+        print("   ", "Green: ", pd[e[1]][3], "%", sep = "")
+        prefix(l+1)
+        print("   ", "Blue: ", pd[e[1]][4], "%", sep = "")
+
 
 
 
     if entity[pd[e[1]][1]] == "Curve on a Parametric Surface":
-        print("    "*l, "Way the curve has been created: ", CRTN[pd[e[1]][2]])
-        print("    "*l, "Pointer to DE of the surface on which the curve lies: ", pd[e[1]][3])
+        prefix(l+1)
+        print("+--", "Way the curve has been created: ", CRTN[pd[e[1]][2]], sep = "")
+        #prefix(l+1)
+        #print("   ", "Pointer to DE of the surface on which the curve lies: ", pd[e[1]][3], sep = "")
         for ee in de:
             if ee[9] == pd[e[1]][3]:
-                process_entity(l+1, de, pd, ee)
+                process_entity(l+2, de, pd, ee)
                 break
-        print("    "*l, "Pointer to DE of the entity that contains definition of curve B: ", pd[e[1]][4])
+        #prefix(l+1)
+        #print("   ", "Pointer to DE of the entity that contains definition of curve B: ", pd[e[1]][4], sep = "")
         for ee in de:
             if ee[9] == pd[e[1]][4]:
-                process_entity(l+1, de, pd, ee)
+                process_entity(l+2, de, pd, ee)
                 break
-        print("    "*l, "Pointer to DE of the curve C: ", pd[e[1]][5])
+        #prefix(l+1)
+        #print("   ", "Pointer to DE of the curve C: ", pd[e[1]][5], sep = "")
         for ee in de:
             if ee[9] == pd[e[1]][5]:
-                process_entity(l+1, de, pd, ee)
+                process_entity(l+2, de, pd, ee)
                 break
-        print("    "*l, "Preferred representation: ", PREF[pd[e[1]][6]])
+        prefix(l+1)
+        print("   ", "Preferred representation: ", PREF[pd[e[1]][6]], sep = "")
 
 
 
     if entity[pd[e[1]][1]] == "Rational B-Spline Surface":
-        print("    "*l, "Upper index of first sum: ", pd[e[1]][2])
-        print("    "*l, "Upper index of second sum: ", pd[e[1]][3])
-        print("    "*l, "Degree of first set of basis function: ", pd[e[1]][4])
-        print("    "*l, "Degree of second set of basis function: ", pd[e[1]][5])
-        print("    "*l, PROP1_[pd[e[1]][6]])
-        print("    "*l, PROP2_[pd[e[1]][7]])
-        print("    "*l, PROP3_[pd[e[1]][8]])
-        print("    "*l, PROP4_[pd[e[1]][9]])
-        print("    "*l, PROP5_[pd[e[1]][10]])
+        prefix(l+1)
+        print("+--", "Upper indexes: ", pd[e[1]][2], ", ", pd[e[1]][3], sep = "")
+        prefix(l+1)
+        print("   ", "Degree of basis function: ", pd[e[1]][4], ", ", pd[e[1]][5], sep = "")
+        prefix(l+1)
+        print("   ", PROP1_[pd[e[1]][6]], sep = "")
+        prefix(l+1)
+        print("   ", PROP2_[pd[e[1]][7]], sep = "")
+        prefix(l+1)
+        print("   ", PROP3_[pd[e[1]][8]], sep = "")
+        prefix(l+1)
+        print("   ", PROP4_[pd[e[1]][9]], sep = "")
+        prefix(l+1)
+        print("   ", PROP5_[pd[e[1]][10]], sep = "")
         K1 = int(pd[e[1]][2])
         K2 = int(pd[e[1]][3])
         M1 = int(pd[e[1]][4])
@@ -59,77 +81,120 @@ def process_entity(l, de, pd, e):
         A = N1 + 2*M1
         B = N2 + 2*M2
         C = (1+K1)*(1+K2)
+        prefix(l+1)
+        print("   ", "First knot sequence: ", end="", sep = "")
+        for i in range(0, A+1):
+            print(pd[e[1]][11+i], ", ", end="", sep="")
+        print()
+        prefix(l+1)
+        print("   ", "Second knot sequence: ", end="", sep = "")
+        for i in range(0, B+1):
+            print(pd[e[1]][11+(A+1)+i], ", ", end="", sep="")
+        print()
+        prefix(l+1)
+        print("   ", "Weights: ", end="", sep = "")
+        for i in range(0, (K1+1)*(K2+1)):
+            print(pd[e[1]][11+(A+1)+(B+1)+i], ", ", end="", sep="")
+        print()
+        prefix(l+1)
+        print("   ", "Control points: ", end="", sep = "")
+        for i in range(0, (K1+1)*(K2+1)):
+            print("[", pd[e[1]][11+(A+1)+(B+1)+(K1+1)*(K2+1)+i*3+0], ", ", end="", sep="")
+            print(     pd[e[1]][11+(A+1)+(B+1)+(K1+1)*(K2+1)+i*3+1], ", ", end="", sep="")
+            print(     pd[e[1]][11+(A+1)+(B+1)+(K1+1)*(K2+1)+i*3+2], "], ", end="", sep="")
+        print()
+        prefix(l+1)
+        print("   ", "Starting/ending parameter values: ", end = "", sep = "")
+        for i in range(0, 4):
+            print(pd[e[1]][11+(A+1)+(B+1)+(K1+1)*(K2+1)+(K1+1)*(K2+1)*3 + i], ", ", end = "", sep = "")
+        print()
+
+
 
     if entity[pd[e[1]][1]] == "Rational B-Spline Curve":
-        print("    "*l, "Form: ", FORM[e[14]])
-        print("    "*l, "Upper index: ", pd[e[1]][2])
-        print("    "*l, "Degree of basis functions: ", pd[e[1]][3])
-        print("    "*l, PROP1[pd[e[1]][4]], PROP2[pd[e[1]][5]], PROP3[pd[e[1]][6]], PROP4[pd[e[1]][7]])
+        prefix(l+1)
+        print("+--", "Form: ", FORM[e[14]], sep = "")
+        prefix(l+1)
+        print("   ", "Upper index: ", pd[e[1]][2], sep = "")
+        prefix(l+1)
+        print("   ", "Degree of basis functions: ", pd[e[1]][3], sep = "")
+        prefix(l+1)
+        print("   ", PROP1[pd[e[1]][4]], PROP2[pd[e[1]][5]], PROP3[pd[e[1]][6]], PROP4[pd[e[1]][7]], sep = "")
         K = int(pd[e[1]][2])
         M = int(pd[e[1]][2])
         N = 1 + K - M
         A = N + 2 * M
-        print("    "*l, "Knot sequence: ", end="")
+        prefix(l+1)
+        print("   ", "Knot sequence: ", end="", sep = "")
         for i in range(0, A+1):
             print(pd[e[1]][8+i], ", ", end="", sep="")
         print()
-        print("    "*l, "Weights: ", end="")
+        prefix(l+1)
+        print("   ", "Weights: ", end="", sep = "")
         for i in range(0, K+1):
             print(pd[e[1]][8+(A+1)+i], ", ", end="", sep="")
         print()
-        print("    "*l, "Control points: ", end="")
+        prefix(l+1)
+        print("   ", "Control points: ", end="", sep = "")
         for i in range(0, K+1):
             print("[", end="", sep="")
             for j in range(0, 3):
                 print(pd[e[1]][8+(A+1)+(K+1)+i*3+j], " ", end="", sep="")
             print("], ", end="", sep="")
         print()
-        print("    "*l, "Starting/ending parameter values: ", pd[e[1]][8+(A+1)+(K+1)+(K+1)*3+0],pd[e[1]][8+(A+1)+(K+1)+(K+1)*3+1])
-        print("    "*l, "Unit normal: ", pd[e[1]][8+(A+1)+(K+1)+(K+1)*3+2],pd[e[1]][8+(A+1)+(K+1)+(K+1)*3+3],pd[e[1]][8+(A+1)+(K+1)+(K+1)*3+4])
-
+        prefix(l+1)
+        print("   ", "Starting/ending parameter values: ", pd[e[1]][8+(A+1)+(K+1)+(K+1)*3+0], ", ", pd[e[1]][8+(A+1)+(K+1)+(K+1)*3+1], sep = "")
+        prefix(l+1)
+        print("   ", "Unit normal: ", end = "", sep = "")
+        for i in range(0, 3):
+            print(pd[e[1]][8+(A+1)+(K+1)+(K+1)*3+2+i], ", ", end = "", sep = "")
+        print()
 
 
     if entity[pd[e[1]][1]] == "Composite Curve":
-        print("    "*l, "Number of entities: ", pd[e[1]][2])
+        prefix(l+1)
+        print("   ", "Number of entities: ", pd[e[1]][2], sep = "")
         for i in range(0, int(pd[e[1]][2])):
-            print("    "*l, "Pointer to the DE of the ", i+1, " entity: ", pd[e[1]][3+i])
+            #prefix(l+1)
+            #print("   ", "Pointer to the DE of the ", i+1, " entity: ", pd[e[1]][3+i], sep = "")
             for ee in de:
                 if ee[9] == pd[e[1]][3+i]:
-                    process_entity(l+1, de, pd, ee)
+                    process_entity(l+2, de, pd, ee)
                     break
 
 
 
     if entity[pd[e[1]][1]] == "Line":
-        print("    "*l, "X1: ", pd[e[1]][2+0])
-        print("    "*l, "Y1: ", pd[e[1]][2+1])
-        print("    "*l, "Z1: ", pd[e[1]][2+2])
-        print("    "*l, "X2: ", pd[e[1]][2+3])
-        print("    "*l, "Y2: ", pd[e[1]][2+4])
-        print("    "*l, "Z2: ", pd[e[1]][2+5])
+        prefix(l+1)
+        print("   ", "[", pd[e[1]][2+0], pd[e[1]][2+1], pd[e[1]][2+2], "], ", "[", pd[e[1]][2+3], pd[e[1]][2+4], pd[e[1]][2+5], "]", sep = "")
 
 
 
     if entity[pd[e[1]][1]] == "Trimmed Parametric Surface":
-        print("    "*l, "Pointer to thr DE of the surface is to be trimmed: ", pd[e[1]][2])
+        #prefix(l+1)
+        #print("   ", "Pointer to thr DE of the surface is to be trimmed: ", pd[e[1]][2], sep = "")
         for ee in de:
             if ee[9] == pd[e[1]][5]:
-                process_entity(l+1, de, pd, ee)
+                process_entity(l+2, de, pd, ee)
                 break
+        prefix(l + 1)
         if pd[e[1]][3] == '0':
-            print("    "*l, "The outer boundary is the boundary of D")
+            print("   ", "The outer boundary is the boundary of D", sep = "")
         else:
-            print("    "*l, "The inner boundary is the boundary of D")
-        print("    "*l, "Number of closed curves which constitute the inner boundary: ", pd[e[1]][4])
-        print("    "*l, "Pointer to the DE of the curve that constitutes the outer boundary: ", pd[e[1]][5])
+            print("   ", "The inner boundary is the boundary of D", sep = "")
+        prefix(l + 1)
+        print("   ", "Number of closed curves which constitute the inner boundary: ", pd[e[1]][4], sep = "")
+        #prefix(l + 1)
+        #print("   ", "Pointer to the DE of the curve that constitutes the outer boundary: ", pd[e[1]][5], sep = "")
         for ee in de:
             if ee[9] == pd[e[1]][5]:
-                process_entity(l+1, de, pd, ee)
+                process_entity(l+2, de, pd, ee)
                 break
         for i in range(0, int(pd[e[1]][4])):
-            print("    " * l, "Pointer to the DE of the", i, "closed inner boundary curve: ", pd[e[1]][6+i])
+            #prefix(l+1)
+            #print("   ", "Pointer to the DE of the", i, "closed inner boundary curve: ", pd[e[1]][6+i], sep = "")
             if ee[9] == pd[e[1]][6+i]:
-                process_entity(l+1, de, pd, ee)
+                process_entity(l+2, de, pd, ee)
                 break
 
 
@@ -308,11 +373,11 @@ for field in parameters_data_sec:
 
 #print(PD_sec)
 
-level=0
+level=1
 n=0
 for e in DE_sec:
     if blank_status[e[8][0:2]] == "Visible":
-        print("#", n)
+        print("#", n, sep = "")
         n += 1
         process_entity(level, DE_sec, PD_sec, e)
 
