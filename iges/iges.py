@@ -1,7 +1,8 @@
 
 from entities import *
 
-f = open("cube_fc.iges", "r")
+#f = open("cube_fc.iges", "r")
+f = open("cube.IGS", "r")
 
 def prefix(l):
     if l > 1:
@@ -156,9 +157,8 @@ def process_entity(l, de, pd, e):
         print("   ", "Number of entities: ", pd[e[1]][2], sep = "")
         for i in range(0, int(pd[e[1]][2])):
             #prefix(l+1)
-            print("   ", "Pointer to the DE of the ", i+1, " entity: ", pd[e[1]][3+i], sep = "")
+            #print("   ", "Pointer to the DE of the ", i+1, " entity: ", pd[e[1]][3+i], sep = "")
             for ee in de:
-                print(ee)
                 if ee[9] == pd[e[1]][3+i]:
                     process_entity(l+2, de, pd, ee)
                     break
@@ -180,6 +180,19 @@ def process_entity(l, de, pd, e):
         print("   ", "Coordinates of location point: ", pd[e[1]][2+5], ", ", pd[e[1]][2+6], ", ", pd[e[1]][2+7], sep = "")
         prefix(l+1)
         print("   ", "Size: ", pd[e[1]][2+8], sep = "")
+
+    if entity[pd[e[1]][1]] == "Associativity Instance":
+        if e[14] == "1":
+            prefix(l + 1)
+            print("+--", "Unordered group with back pointers", sep = "")
+            prefix(l + 1)
+            print("   ", "Number of entries: ", pd[e[1]][2], sep = "")
+            for i in range(0, int(pd[e[1]][2])):
+                for ee in de:
+                    if ee[9] == pd[e[1]][2+1+i]:
+                        process_entity(l + 2, de, pd, ee)
+                        break
+
 
 
 
@@ -240,7 +253,7 @@ def process_entity(l, de, pd, e):
         print("Pointer to DE of the curve C: ", PD_sec[e[1]][5])
         print("Preferred representation: ", PREF[PD_sec[e[1]][6]])
     '''
-    print("    "*l, blank_status[e[8][0:2]], subordinate_entity_switch[e[8][2:4]], entity_use_flag[e[8][4:6]], hierarchy[e[8][6:8]])
+    #print("    "*l, blank_status[e[8][0:2]], subordinate_entity_switch[e[8][2:4]], entity_use_flag[e[8][4:6]], hierarchy[e[8][6:8]])
 
 
 def status_number_parser(l):
@@ -368,12 +381,11 @@ DE_sec = []
 n=0
 for field in direcory_entry_sec:
     DE_subsec = []
-    tmp = []
     for i in DE_section_parser(field):
-        tmp.append(i)
-    t1 = tmp[:-1]
-    t2 = tmp[-1:]
-    DE_subsec.remove()
+        if len(DE_subsec) != 8:
+            DE_subsec.append(str(int(i)))
+        else:
+            DE_subsec.append(i)
     DE_subsec.append(str(n))
     n+=1
     #DE_sec[DE_subsec[9]] = DE_subsec
@@ -398,7 +410,7 @@ for field in parameters_data_sec:
 level=1
 n=0
 for e in DE_sec:
-    if blank_status[e[8][0:2]] == "Visible":
+    if subordinate_entity_switch[e[8][2:4]] == "Independent":
         print("#", n, sep = "")
         n += 1
         process_entity(level, DE_sec, PD_sec, e)
