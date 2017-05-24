@@ -173,3 +173,8 @@ PROP4_['1'] = "Periodic in first parametric variable direction"
 PROP5_ = {}
 PROP5_['0'] = "Non-periodic in second parametric variable direction"
 PROP5_['1'] = "Periodic in second parametric variable direction"
+
+FORM_PLANE = {}
+FORM_PLANE['1'] = "Positive"
+FORM_PLANE['0'] = "Unbounded"
+FORM_PLANE['-1'] = "Negative (Hole)"

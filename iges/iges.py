@@ -1,7 +1,7 @@
 
 from entities import *
 
-f = open("cube.IGS", "r")
+f = open("cube_fc.iges", "r")
 
 def prefix(l):
     if l > 1:
@@ -156,8 +156,9 @@ def process_entity(l, de, pd, e):
         print("   ", "Number of entities: ", pd[e[1]][2], sep = "")
         for i in range(0, int(pd[e[1]][2])):
             #prefix(l+1)
-            #print("   ", "Pointer to the DE of the ", i+1, " entity: ", pd[e[1]][3+i], sep = "")
+            print("   ", "Pointer to the DE of the ", i+1, " entity: ", pd[e[1]][3+i], sep = "")
             for ee in de:
+                print(ee)
                 if ee[9] == pd[e[1]][3+i]:
                     process_entity(l+2, de, pd, ee)
                     break
@@ -166,7 +167,20 @@ def process_entity(l, de, pd, e):
 
     if entity[pd[e[1]][1]] == "Line":
         prefix(l+1)
-        print("   ", "[", pd[e[1]][2+0], pd[e[1]][2+1], pd[e[1]][2+2], "], ", "[", pd[e[1]][2+3], pd[e[1]][2+4], pd[e[1]][2+5], "]", sep = "")
+        print("   ", "[", pd[e[1]][2+0], ", ", pd[e[1]][2+1], ", ", pd[e[1]][2+2], "], ", "[", pd[e[1]][2+3], ", ", pd[e[1]][2+4], ", ", pd[e[1]][2+5], "]", sep = "")
+
+    if entity[pd[e[1]][1]] == "Plane":
+        prefix(l+1)
+        print("+--", "Form: ", FORM_PLANE[e[14]], sep = "")
+        prefix(l+1)
+        print("   ", "Plane coefficients A, B, C, D: ", pd[e[1]][2+0], ", ", pd[e[1]][2+1], ", ", pd[e[1]][2+2], ", ", pd[e[1]][2+3], sep = "")
+        prefix(l+1)
+        print("   ", "Zero: ", pd[e[1]][2+4], sep = "")
+        prefix(l+1)
+        print("   ", "Coordinates of location point: ", pd[e[1]][2+5], ", ", pd[e[1]][2+6], ", ", pd[e[1]][2+7], sep = "")
+        prefix(l+1)
+        print("   ", "Size: ", pd[e[1]][2+8], sep = "")
+
 
 
 
@@ -226,7 +240,7 @@ def process_entity(l, de, pd, e):
         print("Pointer to DE of the curve C: ", PD_sec[e[1]][5])
         print("Preferred representation: ", PREF[PD_sec[e[1]][6]])
     '''
-    #print("    "*l, blank_status[e[8][0:2]], subordinate_entity_switch[e[8][2:4]], entity_use_flag[e[8][4:6]], hierarchy[e[8][6:8]])
+    print("    "*l, blank_status[e[8][0:2]], subordinate_entity_switch[e[8][2:4]], entity_use_flag[e[8][4:6]], hierarchy[e[8][6:8]])
 
 
 def status_number_parser(l):
@@ -354,8 +368,12 @@ DE_sec = []
 n=0
 for field in direcory_entry_sec:
     DE_subsec = []
+    tmp = []
     for i in DE_section_parser(field):
-        DE_subsec.append(i)
+        tmp.append(i)
+    t1 = tmp[:-1]
+    t2 = tmp[-1:]
+    DE_subsec.remove()
     DE_subsec.append(str(n))
     n+=1
     #DE_sec[DE_subsec[9]] = DE_subsec
@@ -366,7 +384,11 @@ n=0
 for field in parameters_data_sec:
     PD_subsec = []
     for i in PD_section_parser(field):
-        PD_subsec.append(i)
+        try:
+            int(i)
+            PD_subsec.append(str(int(i)))
+        except:
+            PD_subsec.append(i)
     PD_subsec.append(str(n))
     n+=1
     PD_sec[PD_subsec[0]] = PD_subsec[1:]
