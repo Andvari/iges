@@ -1,180 +1,161 @@
 
-entity = {}
+entity = {'100': 'Circular Arc',
+          '102': 'Composite Curve',
+          '104': 'Conic Arc',
+          '106': 'Copious Data',
+          '106/11': '2D Linear Path',
+          '106/12': '3d Linear Path',
+          '106/63': 'Simple Closed Planar Curve',
+          '108': 'Plane',
+          '110': 'Line',
+          '112': 'Parametric Spline Curve',
+          '114': 'Parametric Spline Surface',
+          '116': 'Point',
+          '118': 'Ruled Surface',
+          '118/1': 'Ruled Surface',
+          '120': 'Surface of Revolution',
+          '122': 'Tabulated Cylinder',
+          '123': 'Direction',
+          '124': 'Transformation Matrix',
+          '125': 'Flash',
+          '126': 'Rational B-Spline Curve',
+          '128': 'Rational B-Spline Surface',
+          '130': 'Offset Curve',
+          '132': 'Connect Point',
+          '134': 'Node',
+          '136': 'Finite Element',
+          '138': 'Nodal Displacement and Rotation',
+          '140': 'Offset Surface',
+          '141': 'Boundary',
+          '142': 'Curve on a Parametric Surface',
+          '143': 'Bounded Surface',
+          '144': 'Trimmed Parametric Surface',
+          '146': 'Nodal Results',
+          '148': 'Element Results',
+          '150': 'Block',
+          '152': 'Right Angular Wedge',
+          '154': 'Right Circular Cylinder',
+          '156': 'Right Circular Cone Frustum',
+          '158': 'Sphere',
+          '160': 'Torus',
+          '162': 'Solid of Revolution',
+          '164': 'Solid of Linear Extrusion',
+          '168': 'Ellipsoid',
+          '180': 'Boolean Tree',
+          '182': 'Selected Component',
+          '184': 'Solid Assembly',
+          '186': 'Manifold Solid B-Rep Object',
+          '190': 'Plane Surface',
+          '192': 'Right Circular Cylindrical Surface',
+          '194': 'Right Circular Conical Surface',
+          '196': 'Spherical Surface',
+          '198': 'Toroidal Surface',
+          '202': 'Angular Dimension',
+          '204': 'Curve Dimension',
+          '206': 'Diameter Dimension',
+          '208': 'Flag Note',
+          '210': 'General Label',
+          '212': 'General Note',
+          '213': 'New General Note',
+          '214': 'Leader (Arrow)',
+          '216': 'Linear Dimension',
+          '218': 'Ordinate Dimension',
+          '220': 'Point Dimension',
+          '222': 'Radius Dimension',
+          '228': 'General Symbol',
+          '230': 'Sectioned Area',
+          '302': 'Associativity Definition',
+          '304': 'Line Font Definition',
+          '306': 'MACRO Definition',
+          '308': 'Subfigure Definition',
+          '310': 'Text Font Definition',
+          '312': 'Text Display Template',
+          '314': 'Color Definition',
+          '316': 'Units Data',
+          '320': 'Network Subfigure Definition',
+          '322': 'Attribute Table Definition',
+          '402': 'Associativity Instance',
+          '404': 'Drawing',
+          '406': 'Property',
+          '408': 'Singular Subfigure Instance',
+          '410': 'View',
+          '412': 'Rectangular Array Subfigure Instance',
+          '414': 'Circular Array Subfigure Instance',
+          '416': 'External Reference',
+          '418': 'Nodal Load/Constraint',
+          '420': 'Network Subfigure Instance',
+          '422': 'Attribute Table Instance',
+          '430': 'Solid Instance',
+          '502': 'Vertex',
+          '504': 'Edge',
+          '508': 'Loop',
+          '510': 'Face',
+          '514': 'Shell'}
 
-entity['100'] = 'Circular Arc'
-entity['102'] = 'Composite Curve'
-entity['104'] = 'Conic Arc'
-entity['106'] = 'Copious Data'
-entity['106/11'] = '2D Linear Path'
-entity['106/12'] = '3d Linear Path'
-entity['106/63'] = 'Simple Closed Planar Curve'
-entity['108'] = 'Plane'
-entity['110'] = 'Line'
-entity['112'] = 'Parametric Spline Curve'
-entity['114'] = 'Parametric Spline Surface'
-entity['116'] = 'Point'
-entity['118'] = 'Ruled Surface'
-entity['118/1'] = 'Ruled Surface'
-entity['120'] = 'Surface of Revolution'
-entity['122'] = 'Tabulated Cylinder'
-entity['123'] = 'Direction'
-entity['124'] = 'Transformation Matrix'
-entity['125'] = 'Flash'
-entity['126'] = 'Rational B-Spline Curve'
-entity['128'] = 'Rational B-Spline Surface'
-entity['130'] = 'Offset Curve'
-entity['132'] = 'Connect Point'
-entity['134'] = 'Node'
-entity['136'] = 'Finite Element'
-entity['138'] = 'Nodal Displacement and Rotation'
-entity['140'] = 'Offset Surface'
-entity['141'] = 'Boundary'
-entity['142'] = 'Curve on a Parametric Surface'
-entity['143'] = 'Bounded Surface'
-entity['144'] = 'Trimmed Parametric Surface'
-entity['146'] = 'Nodal Results'
-entity['148'] = 'Element Results'
-entity['150'] = 'Block'
-entity['152'] = 'Right Angular Wedge'
-entity['154'] = 'Right Circular Cylinder'
-entity['156'] = 'Right Circular Cone Frustum'
-entity['158'] = 'Sphere'
-entity['160'] = 'Torus'
-entity['162'] = 'Solid of Revolution'
-entity['164'] = 'Solid of Linear Extrusion'
-entity['168'] = 'Ellipsoid'
-entity['180'] = 'Boolean Tree'
-entity['182'] = 'Selected Component'
-entity['184'] = 'Solid Assembly'
-entity['186'] = 'Manifold Solid B-Rep Object'
-entity['190'] = 'Plane Surface'
-entity['192'] = 'Right Circular Cylindrical Surface'
-entity['194'] = 'Right Circular Conical Surface'
-entity['196'] = 'Spherical Surface'
-entity['198'] = 'Toroidal Surface'
-entity['202'] = 'Angular Dimension'
-entity['204'] = 'Curve Dimension'
-entity['206'] = 'Diameter Dimension'
-entity['208'] = 'Flag Note'
-entity['210'] = 'General Label'
-entity['212'] = 'General Note'
-entity['213'] = 'New General Note'
-entity['214'] = 'Leader (Arrow)'
-entity['216'] = 'Linear Dimension'
-entity['218'] = 'Ordinate Dimension'
-entity['220'] = 'Point Dimension'
-entity['222'] = 'Radius Dimension'
-entity['228'] = 'General Symbol'
-entity['230'] = 'Sectioned Area'
-entity['302'] = 'Associativity Definition'
-entity['304'] = 'Line Font Definition'
-entity['306'] = 'MACRO Definition'
-entity['308'] = 'Subfigure Definition'
-entity['310'] = 'Text Font Definition'
-entity['312'] = 'Text Display Template'
-entity['314'] = 'Color Definition'
-entity['316'] = 'Units Data'
-entity['320'] = 'Network Subfigure Definition'
-entity['322'] = 'Attribute Table Definition'
-entity['402'] = 'Associativity Instance'
-entity['404'] = 'Drawing'
-entity['406'] = 'Property'
-entity['408'] = 'Singular Subfigure Instance'
-entity['410'] = 'View'
-entity['412'] = 'Rectangular Array Subfigure Instance'
-entity['414'] = 'Circular Array Subfigure Instance'
-entity['416'] = 'External Reference'
-entity['418'] = 'Nodal Load/Constraint'
-entity['420'] = 'Network Subfigure Instance'
-entity['422'] = 'Attribute Table Instance'
-entity['430'] = 'Solid Instance'
-entity['502'] = 'Vertex'
-entity['504'] = 'Edge'
-entity['508'] = 'Loop'
-entity['510'] = 'Face'
-entity['514'] = 'Shell'
+blank_status = {'00': "Visible",
+                '01': "Blanked"}
 
-blank_status = {}
-blank_status['00'] = "Visible"
-blank_status['01'] = "Blanked"
+subordinate_entity_switch = {'00': "Independent",
+                             '01': "Physically Dependent",
+                             '02': "Logically Dependent",
+                             '03': "Physically and Logically Dependent"}
 
-subordinate_entity_switch = {}
-subordinate_entity_switch['00'] = "Independent"
-subordinate_entity_switch['01'] = "Physically Dependent"
-subordinate_entity_switch['02'] = "Logically Dependent"
-subordinate_entity_switch['03'] = "Physically and Logically Dependent"
+entity_use_flag = {'00': "Geometry",
+                   '01': "Annotation",
+                   '02': "Definition",
+                   '03': "Other",
+                   '04': "Logial/Positional",
+                   '05': "2D Parametric",
+                   '06': "Construction geometry"}
 
-entity_use_flag = {}
-entity_use_flag['00'] = "Geometry"
-entity_use_flag['01'] = "Annotation"
-entity_use_flag['02'] = "Definition"
-entity_use_flag['03'] = "Other"
-entity_use_flag['04'] = "Logial/Positional"
-entity_use_flag['05'] = "2D Parametric"
-entity_use_flag['06'] = "Construction geometry"
+hierarchy = {'00': "Global top down",
+             '01': "Global defer",
+             '02': "Use hierarchy property"}
 
-hierarchy = {}
-hierarchy['00'] = "Global top down"
-hierarchy['01'] = "Global defer"
-hierarchy['02'] = "Use hierarchy property"
+crtn = {'0': "Unspecified",
+        '1': "Projection",
+        '2': "Intersection",
+        '3': "Isoparametric curve"}
 
-CRTN = {}
-CRTN['0'] = "Unspecified"
-CRTN['1'] = "Projection"
-CRTN['2'] = "Intersection"
-CRTN['3'] = "Isoparametric curve"
+pref = {'0': "Unspecified",
+        '1': "S o B",
+        '2': "C",
+        '3': "C and S o B"}
 
-PREF = {}
-PREF['0'] = "Unspecified"
-PREF['1'] = "S o B"
-PREF['2'] = "C"
-PREF['3'] = "C and S o B"
+form = {'0': "Form of the curve is determined from the rational B-spline parameters",
+        '1': "Line",
+        '2': "Circular arc",
+        '3': "Elliptical arc",
+        '4': "Parabolic arc",
+        '5': "Hyperbolic arc"}
 
-FORM = {}
-FORM['0'] = "Form of the curve is determined from the rational B-spline parameters"
-FORM['1'] = "Line"
-FORM['2'] = "Circular arc"
-FORM['3'] = "Elliptical arc"
-FORM['4'] = "Parabolic arc"
-FORM['5'] = "Hyperbolic arc"
+prop1 = {'0': "Nonplanar",
+         '1': "Planar"}
 
-PROP1 = {}
-PROP1['0'] = "Nonplanar"
-PROP1['1'] = "Planar"
+prop2 = {'0': "Open curve",
+         '1': "Closed curve"}
 
-PROP2 = {}
-PROP2['0'] = "Open curve"
-PROP2['1'] = "Closed curve"
+prop3 = {'0': "Rational",
+         '1': "Polynomial"}
 
-PROP3 = {}
-PROP3['0'] = "Rational"
-PROP3['1'] = "Polynomial"
+prop4 = {'0': "Nonperiodic",
+         '1': "Periodic"}
 
-PROP4 = {}
-PROP4['0'] = "Nonperiodic"
-PROP4['1'] = "Periodic"
+prop1_ = {'0': "Not closed in first parametric variable direction",
+          '1': "Closed in first parametric variable direction"}
 
-PROP1_ = {}
-PROP1_['0'] = "Not closed in first parametric variable direction"
-PROP1_['1'] = "Closed in first parametric variable direction"
+prop2_ = {'0': "Not closed in second parametric variable direction",
+          '1': "Closed in second parametric variable direction"}
 
-PROP2_ = {}
-PROP2_['0'] = "Not closed in second parametric variable direction"
-PROP2_['1'] = "Closed in second parametric variable direction"
+prop3_ = {'0': "Rational",
+          '1': "Polynomial"}
 
-PROP3_ = {}
-PROP3_['0'] = "Rational"
-PROP3_['1'] = "Polynomial"
+prop4_ = {'0': "Non-periodic in first parametric variable direction",
+          '1': "Periodic in first parametric variable direction"}
 
-PROP4_ = {}
-PROP4_['0'] = "Non-periodic in first parametric variable direction"
-PROP4_['1'] = "Periodic in first parametric variable direction"
+prop5_ = {'0': "Non-periodic in second parametric variable direction",
+          '1': "Periodic in second parametric variable direction"}
 
-PROP5_ = {}
-PROP5_['0'] = "Non-periodic in second parametric variable direction"
-PROP5_['1'] = "Periodic in second parametric variable direction"
-
-FORM_PLANE = {}
-FORM_PLANE['1'] = "Positive"
-FORM_PLANE['0'] = "Unbounded"
-FORM_PLANE['-1'] = "Negative (Hole)"
+form_plane = {'1': "Positive",
+              '0': "Unbounded",
+              '-1': "Negative (Hole)"}
