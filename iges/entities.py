@@ -92,70 +92,75 @@ entity = {'100': 'Circular Arc',
           '510': 'Face',
           '514': 'Shell'}
 
-blank_status = {'00': "Visible",
-                '01': "Blanked"}
+blank_status_str = {'00': "Visible",
+                    '01': "Blanked"}
 
-subordinate_entity_switch = {'00': "Independent",
-                             '01': "Physically Dependent",
-                             '02': "Logically Dependent",
-                             '03': "Physically and Logically Dependent"}
+subordinate_entity_switch_str = {'00': "Independent",
+                                 '01': "Physically Dependent",
+                                 '02': "Logically Dependent",
+                                 '03': "Physically and Logically Dependent"}
 
-entity_use_flag = {'00': "Geometry",
-                   '01': "Annotation",
-                   '02': "Definition",
-                   '03': "Other",
-                   '04': "Logial/Positional",
-                   '05': "2D Parametric",
-                   '06': "Construction geometry"}
+entity_use_flag_str = {'00': "Geometry",
+                       '01': "Annotation",
+                       '02': "Definition",
+                       '03': "Other",
+                       '04': "Logial/Positional",
+                       '05': "2D Parametric",
+                       '06': "Construction geometry"}
 
-hierarchy = {'00': "Global top down",
-             '01': "Global defer",
-             '02': "Use hierarchy property"}
+hierarchy_str = {'00': "Global top down",
+                 '01': "Global defer",
+                 '02': "Use hierarchy property"}
 
-crtn = {'0': "Unspecified",
-        '1': "Projection",
-        '2': "Intersection",
-        '3': "Isoparametric curve"}
+crtn_str = {'0': "Unspecified",
+            '1': "Projection",
+            '2': "Intersection",
+            '3': "Isoparametric curve"}
 
-pref = {'0': "Unspecified",
-        '1': "S o B",
-        '2': "C",
-        '3': "C and S o B"}
+pref_str = {'0': "Unspecified",
+            '1': "S o B",
+            '2': "C",
+            '3': "C and S o B"}
 
-form = {'0': "Form of the curve is determined from the rational B-spline parameters",
-        '1': "Line",
-        '2': "Circular arc",
-        '3': "Elliptical arc",
-        '4': "Parabolic arc",
-        '5': "Hyperbolic arc"}
+form_str = {'0': "Form of the curve is determined from the rational B-spline parameters",
+            '1': "Line",
+            '2': "Circular arc",
+            '3': "Elliptical arc",
+            '4': "Parabolic arc",
+            '5': "Hyperbolic arc"}
 
-prop1 = {'0': "Nonplanar",
-         '1': "Planar"}
+prop1_str = {'0': "Nonplanar",
+             '1': "Planar"}
 
-prop2 = {'0': "Open curve",
-         '1': "Closed curve"}
+prop2_str = {'0': "Open curve",
+             '1': "Closed curve"}
 
-prop3 = {'0': "Rational",
-         '1': "Polynomial"}
+prop3_str = {'0': "Rational",
+             '1': "Polynomial"}
 
-prop4 = {'0': "Nonperiodic",
-         '1': "Periodic"}
+prop4_str = {'0': "Nonperiodic",
+             '1': "Periodic"}
 
-prop1_ = {'0': "Not closed in first parametric variable direction",
-          '1': "Closed in first parametric variable direction"}
+prop1__str = {'0': "Not closed in first parametric variable direction",
+              '1': "Closed in first parametric variable direction"}
 
-prop2_ = {'0': "Not closed in second parametric variable direction",
-          '1': "Closed in second parametric variable direction"}
+prop2__str = {'0': "Not closed in second parametric variable direction",
+              '1': "Closed in second parametric variable direction"}
 
-prop3_ = {'0': "Rational",
-          '1': "Polynomial"}
+prop3__str = {'0': "Rational",
+              '1': "Polynomial"}
 
-prop4_ = {'0': "Non-periodic in first parametric variable direction",
-          '1': "Periodic in first parametric variable direction"}
+prop4__str = {'0': "Non-periodic in first parametric variable direction",
+              '1': "Periodic in first parametric variable direction"}
 
-prop5_ = {'0': "Non-periodic in second parametric variable direction",
-          '1': "Periodic in second parametric variable direction"}
+prop5__str = {'0': "Non-periodic in second parametric variable direction",
+              '1': "Periodic in second parametric variable direction"}
 
-form_plane = {'1': "Positive",
-              '0': "Unbounded",
-              '-1': "Negative (Hole)"}
+form_plane_str = {'1': "Positive",
+                  '0': "Unbounded",
+                  '-1': "Negative (Hole)"}
+
+form_associativity_str = {'1': "Unordered group with back pointers",
+                          '7': "Unordered group without back pointers",
+                          '14': "Ordered group with back pointers",
+                          '15': "Ordered group without back pointers"}
