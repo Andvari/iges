@@ -1,8 +1,8 @@
 from entities import *
 
-#f = open("cube_fc.iges", "r")
-
-f = open("cube.IGS", "r")
+f = open("cube_fc.iges", "r")
+#f = open("cube.IGS", "r")
+#f = open("g-part.IGS", "r")
 
 
 def prefix(l):
@@ -79,19 +79,19 @@ def process_entity(l, de_, pd_, e):
         c = (1 + k1) * (1 + k2)
 
         s = []
-        for i in range(0, a + 1):
+        for i in range(a + 1):
             s.append(pd[11+i])
 
         t = []
-        for i in range(0, b + 1):
+        for i in range(b + 1):
             t.append(pd[11 + (a + 1) + i])
 
         w = []
-        for i in range(0, (k1 + 1) * (k2 + 1)):
+        for i in range((k1 + 1) * (k2 + 1)):
             w.append(pd[11 + (a + 1) + (b + 1) + i])
 
         cp = []
-        for i in range(0, (k1 + 1) * (k2 + 1)):
+        for i in range((k1 + 1) * (k2 + 1)):
             xyz = {'X': (pd[11 + (a + 1) + (b + 1) + (k1 + 1)*(k2 + 1) + i * 3 + 0]),
                    'Y': (pd[11 + (a + 1) + (b + 1) + (k1 + 1)*(k2 + 1) + i * 3 + 1]),
                    'Z': (pd[11 + (a + 1) + (b + 1) + (k1 + 1)*(k2 + 1) + i * 3 + 2])}
@@ -164,15 +164,15 @@ def process_entity(l, de_, pd_, e):
         prop4 = pd[7]
 
         t = []
-        for i in range(0, a + 1):
+        for i in range(a + 1):
             t.append(pd[8 + i])
 
         w = []
-        for i in range(0, k + 1):
+        for i in range(k + 1):
             w.append(pd[8 + (a + 1) + i])
 
         cp = []
-        for i in range(0, k + 1):
+        for i in range(k + 1):
             xyz = {'X': pd[8 + (a + 1) + (k + 1) + i * 3 + 0],
                    'Y': pd[8 + (a + 1) + (k + 1) + i * 3 + 1],
                    'Z': pd[8 + (a + 1) + (k + 1) + i * 3 + 2]}
@@ -224,13 +224,13 @@ def process_entity(l, de_, pd_, e):
     if entity[etn] == "Composite Curve":
         n = int(pd[2])
         de = []
-        for i in range(0, n):
+        for i in range(n):
             de.append(pd[3+i])
 
         prefix(l + 1)
         print("   ", "Number of entities: ", n, sep="")
         facet = []
-        for i in range(0, n):
+        for i in range(n):
             for eee in de_:
                 if eee["Sequence Number"] == de[i]:
                     facet.append(process_entity(l + 2, de_, pd_, eee))
@@ -238,8 +238,8 @@ def process_entity(l, de_, pd_, e):
 
     if entity[etn] == "Line":
         if e['Form Number'] == '0':
-            p1 = {'X': pd[2], 'Y': pd[3], 'Z': pd[4]}
-            p2 = {'X': pd[5], 'Y': pd[6], 'Z': pd[7]}
+            p1 = {'X': format(float(pd[2]), '.4f'), 'Y': format(float(pd[3]), '.4f'), 'Z': format(float(pd[4]), '.4f')}
+            p2 = {'X': format(float(pd[5]), '.4f'), 'Y': format(float(pd[6]), '.4f'), 'Z': format(float(pd[7]), '.4f')}
             prefix(l + 1)
             print("   ", "Form: ", e['Form Number'], sep="")
             prefix(l + 1)
@@ -282,7 +282,7 @@ def process_entity(l, de_, pd_, e):
         if e["Form Number"] == "1":
             n = int(pd[2])
             de = []
-            for pointer in range(0, n):
+            for pointer in range(n):
                 de.append(pd[3+pointer])
 
             prefix(l + 1)
@@ -291,7 +291,7 @@ def process_entity(l, de_, pd_, e):
             prefix(l + 1)
             print("   ", "Number of entries: ", n, sep="")
             body = []
-            for i in range(0, n):
+            for i in range(n):
                 for eee in de_:
                     if eee["Sequence Number"] == de[i]:
                         type, obj = process_entity(l + 2, de_, pd_, eee)
@@ -329,7 +329,7 @@ def process_entity(l, de_, pd_, e):
                 obj = process_entity(l + 2, de_, pd_, eee)
                 break
 
-        for i in range(0, int(n2)):
+        for i in range(int(n2)):
             for eee in de_:
                 if eee["Sequence Number"] == pd[6+i]:
                     process_entity(l + 2, de_, pd_, eee)
@@ -526,8 +526,123 @@ for ee in de_sec:
         if type == 'Facet':
             solid.append(obj)
 
+
+
+cw = {'X': ['Z+Y+Z-', 'Y+Z-Y-'],
+      'Y': ['Z+X-Z-', 'X-Z-X+'],
+      'Z': ['Y+X+Y-', 'X+Y-X-']}
+
+ccw = {'X': ['Z+Y-Z-', 'Y+Z+Y-'],
+       'Y': ['Z+X+Z-', 'X-Z+X+'],
+       'Z': ['Y+X-Y-', 'X+Y+X-']}
+
+acw = {'X': ['Y+Z+', 'Z-Y+', 'Y-Z-', 'Z+Y-'],
+       'Y': ['X-Z+', 'Z-X-', 'X+Z-', 'Z+X+'],
+       'Z': ['X+Y+', 'Y-X+', 'X-Y-', 'Y+X-']}
+
+accw = {'X': ['Y+Z-', 'Z+Y+', 'Y-Z+', 'Z-Y-'],
+        'Y': ['X-Z-', 'Z+X-', 'X+Z+', 'Z-X+'],
+        'Z': ['X+Y-', 'Y+X+', 'X-Y+', 'Y-X-']}
+
+
+print("Facets found: ", len(solid))
+i=1
 for facet in solid:
+    print("Edges in %d facet: %d, "%(i, len(facet)), end="")
+    m = []
     for edge in facet:
         p1, p2 = edge
-        print(p1, p2)
+        x = float(p1['X'])
+        y = float(p1['Y'])
+        z = float(p1['Z'])
+        xn = float(p2['X'])
+        yn = float(p2['Y'])
+        zn = float(p2['Z'])
+
+        if x < xn:
+            m.append('X+')
+        if y < yn:
+            m.append('Y+')
+        if z < zn:
+            m.append('Z+')
+        if x > xn:
+            m.append('X-')
+        if y > yn:
+            m.append('Y-')
+        if z > zn:
+            m.append('Z-')
+    m.append(m[0])
+    m.append(m[1])
+    print(m, end="")
+    vote_cw = 0
+    vote_ccw = 0
+    a_cw = []
+    a_ccw = []
+    for e in range(len(m)-2):
+        route = m[e+0] + m[e+1] + m[e+2]
+        if route == cw['X'][0] or route == cw['X'][1]:
+            vote_cw += 1
+        if route == cw['Y'][0] or route == cw['Y'][1]:
+            vote_cw += 1
+        if route == cw['Z'][0] or route == cw['Z'][1]:
+            vote_cw += 1
+        if route == ccw['X'][0] or route == ccw['X'][1]:
+            vote_ccw += 1
+        if route == ccw['Y'][0] or route == ccw['Y'][1]:
+            vote_ccw += 1
+        if route == ccw['Z'][0] or route == ccw['Z'][1]:
+            vote_ccw += 1
+
+        route = m[e+0] + m[e+1]
+
+        if route == acw['X'][0] or route == acw['X'][1] or route == acw['X'][2] or route == acw['X'][3]:
+            a_cw.append((e, e+1))
+        if route == acw['Y'][0] or route == acw['Y'][1] or route == acw['Y'][2] or route == acw['Y'][3]:
+            a_cw.append((e, e+1))
+        if route == acw['Z'][0] or route == acw['Z'][1] or route == acw['Z'][2] or route == acw['Z'][3]:
+            a_cw.append((e, e+1))
+
+        if route == accw['X'][0] or route == accw['X'][1] or route == accw['X'][2] or route == accw['X'][3]:
+            a_ccw.append((e, e+1))
+        if route == accw['Y'][0] or route == accw['Y'][1] or route == accw['Y'][2] or route == accw['Y'][3]:
+            a_ccw.append((e, e+1))
+        if route == accw['Z'][0] or route == accw['Z'][1] or route == accw['Z'][2] or route == accw['Z'][3]:
+            a_ccw.append((e, e+1))
+
+
+    if vote_cw > vote_ccw:
+        print(" Clockwise, ", "Anomalies: ", a_cw, end="")
+    else:
+        print(" Counterclockwise, ", "Anomalies: ", a_ccw, end="")
+
     print()
+
+    i += 1
+
+
+common_facets = [[len(solid) for x in range(len(solid))] for y in range(len(solid))]
+dir = [[len(solid) for x in range(len(solid))] for y in range(len(solid))]
+
+for i in range(len(solid)):
+    for j in range(i+1, len(solid)):
+        for k in range(len(solid[i])):
+            for l in range(len(solid[j])):
+                p1, p2 = solid[i][k]
+                p3, p4 = solid[j][l]
+                if p1 == p3 and p2 == p4:
+                    common_facets[i][j] = k
+                    common_facets[j][i] = l
+                    dir[j][i] = 0
+                    dir[i][j] = 0
+                if p1 == p4 and p2 == p3:
+                    common_facets[i][j] = k
+                    common_facets[j][i] = l
+                    dir[j][i] = 1
+                    dir[i][j] = 1
+
+for row in common_facets:
+    print(row)
+
+print()
+for row in dir:
+    print(row)
