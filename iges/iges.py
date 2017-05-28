@@ -1,5 +1,6 @@
 from entities import *
 from lib import *
+from classes import *
 
 #file = open("cube_fc.iges", "r")
 #file = open("cube.IGS", "r")
@@ -59,18 +60,18 @@ for field in parameters_data_sec:
 
 solid = solid_detect(de_sec, pd_sec)
 
-ff = facet_to_facet_matrix(solid, 0)
-fe = facet_to_edge_matrix(ff, 0)
+ff = face_to_face_matrix(solid, 0)
+fe = face_to_edge_matrix(ff, 0)
 
 i = counter(1)
-for facet in solid:
-    print("Facet: %d"%i.__next__())
+for face in solid:
+    print("face: %d"%i.__next__())
     print("Edges:")
-    for p1, p2 in facet:
+    for p1, p2 in face:
         print('[%.3f, %.3f, %.3f], [%.3f, %.3f, %.3f] '%(p1['X'], p1['Y'], p1['Z'], p2['X'], p2['Y'], p2['Z']))
 
     m = []
-    for edge in facet:
+    for edge in face:
         m.append(direction(edge))
 
     vote_cw = 0
@@ -117,3 +118,25 @@ for facet in solid:
 
     print("Anomalies: ", anomalies)
     print("----------------------")
+
+v1 = Virtex(0, 0, 0)
+v2 = Virtex(0, 10, 0)
+v3 = Virtex(10, 10, 0)
+v4 = Virtex(10, 0, 0)
+
+e = []
+e.append(Edge(v1, v2))
+e.append(Edge(v2, v3))
+e.append(Edge(v3, v4))
+e.append(Edge(v4, v1))
+
+f1 = Face(e)
+
+for e in f1.edges():
+    p1, p2 = e.get()
+    x1,y1,z1 = p1.get()
+    x2,y2,z2 = p2.get()
+
+for v in f1.virtexes():
+    x,y,z = v.get()
+    print(x, y, z)

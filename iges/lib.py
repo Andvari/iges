@@ -1,6 +1,6 @@
 from entities import *
 
-def facet_to_facet_matrix(s, isprint):
+def face_to_face_matrix(s, isprint):
     f = [[len(s) for x in range(len(s))] for y in range(len(s))]
 
     for i in range(len(s)):
@@ -19,7 +19,7 @@ def facet_to_facet_matrix(s, isprint):
 
     return f
 
-def facet_to_edge_matrix(s, isprint):
+def face_to_edge_matrix(s, isprint):
     f = []
     for i in range(len(s)):
         l = []
@@ -81,14 +81,14 @@ def process_entity(l, de_, pd_, e):
                 if eee["Sequence Number"] == bptr:
                     process_entity(l + 2, de_, pd_, eee)
                     break
-        facet = ""
+        face = ""
         for eee in de_:
             if eee["Sequence Number"] == cptr:
-                facet = process_entity(l + 2, de_, pd_, eee)
+                face = process_entity(l + 2, de_, pd_, eee)
                 break
         prefix(l + 1)
         print("   ", "Preferred representation: ", pref_str[pref], sep="")
-        return facet
+        return face
 
     if entity[etn] == "Rational B-Spline Surface":
         k1 = int(pd[2])
@@ -258,12 +258,12 @@ def process_entity(l, de_, pd_, e):
 
         prefix(l + 1)
         print("   ", "Number of entities: ", n, sep="")
-        facet = []
+        face = []
         for i in range(n):
             for eee in de_:
                 if eee["Sequence Number"] == de[i]:
-                    facet.append(process_entity(l + 2, de_, pd_, eee))
-        return facet
+                    face.append(process_entity(l + 2, de_, pd_, eee))
+        return face
 
     if entity[etn] == "Line":
         if e['Form Number'] == '0':
@@ -328,7 +328,7 @@ def process_entity(l, de_, pd_, e):
                 for eee in de_:
                     if eee["Sequence Number"] == de[i]:
                         type, obj = process_entity(l + 2, de_, pd_, eee)
-                        if type == 'Facet':
+                        if type == 'face':
                             body.append(obj)
                         break
         else:
@@ -367,7 +367,7 @@ def process_entity(l, de_, pd_, e):
                 if eee["Sequence Number"] == pd[6+i]:
                     process_entity(l + 2, de_, pd_, eee)
                     break
-        return 'Facet', obj
+        return 'face', obj
 
     prefix(l + 1)
     print("   ", "Not implemented yet")
@@ -459,7 +459,7 @@ def solid_detect(de, pd):
                 continue
             if type == 'Solid':
                 s = obj
-            if type == 'Facet':
+            if type == 'face':
                 s.append(obj)
 
     return s
