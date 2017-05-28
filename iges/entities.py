@@ -164,3 +164,20 @@ form_associativity_str = {'1': "Unordered group with back pointers",
                           '7': "Unordered group without back pointers",
                           '14': "Ordered group with back pointers",
                           '15': "Ordered group without back pointers"}
+
+cw = {'X': ['Z+Y+Z-', 'Y+Z-Y-'],
+      'Y': ['Z+X-Z-', 'X-Z-X+'],
+      'Z': ['Y+X+Y-', 'X+Y-X-']}
+
+ccw = {'X': ['Z+Y-Z-', 'Y+Z+Y-'],
+       'Y': ['Z+X+Z-', 'X-Z+X+'],
+       'Z': ['Y+X-Y-', 'X+Y+X-']}
+
+acw = {'X': ['Y+Z+', 'Z-Y+', 'Y-Z-', 'Z+Y-'],
+       'Y': ['X-Z+', 'Z-X-', 'X+Z-', 'Z+X+'],
+       'Z': ['X+Y+', 'Y-X+', 'X-Y-', 'Y+X-']}
+
+accw = {'X': ['Y+Z-', 'Z+Y+', 'Y-Z+', 'Z-Y-'],
+        'Y': ['X-Z-', 'Z+X-', 'X+Z+', 'Z-X+'],
+        'Z': ['X+Y-', 'Y+X+', 'X-Y+', 'Y-X-']}
+
