@@ -1,1 +1,1 @@
-import entities
+from entities import *

@@ -1,6 +1,8 @@
 from entities import *
 from lib import *
-from classes import *
+from virtex import Virtex
+from edge import Edge
+from face import Face
 
 #file = open("cube_fc.iges", "r")
 #file = open("cube.IGS", "r")
