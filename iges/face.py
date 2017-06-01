@@ -8,10 +8,11 @@ class Face:
         for e in f:
             self.edges.append(e)
 
-    def update(self, f):
+    def __init__(self):
         self.edges = []
-        for e in f:
-            self.edges.append(e)
+
+    def append(self, e):
+        self.edges.append(e)
 
     def edges(self):
         return self.edges
