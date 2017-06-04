@@ -131,7 +131,11 @@ class Solid:
     def __next__(self):
         if self.i < len(self.faces):
             self.i += 1
-            return self.faces[self.i-1]
+
+            a = Face()
+            for e in self.faces[self.i-1]:
+                a.append(e)
+            return a
 
         else:
             raise StopIteration

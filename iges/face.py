@@ -3,7 +3,7 @@ from entities import cw, ccw, acw, accw
 
 
 class Face:
-    def __init__(self, f):
+    def __init__(self, f : []):
         self.edges = []
         for e in f:
             self.edges.append(e)
@@ -75,7 +75,7 @@ class Face:
         xy = 0
         yz = 0
         xz = 0
-        for e in self.e:
+        for e in self.edges:
             for p in e.plane():
                 if p == 'XY':
                     xy += 1
@@ -84,12 +84,22 @@ class Face:
                 if p == 'XZ':
                     xz += 1
 
-        p = []
-        if xy == len(self.e):
+        p = ""
+        if xy == len(self.edges):
             p += "XY"
-        if yz == len(self.e):
+        if yz == len(self.edges):
             p += "YZ"
-        if xz == len(self.e):
+        if xz == len(self.edges):
             p += "XZ"
 
         return p
+
+    def print(self):
+        for e in self.edges:
+            e.print()
+        print('---------')
+
+    def image(self, p):
+        for e in self.edges:
+            xmin, xmax, ymin, ymax, img = e.image(p)
+            print(xmin, xmax, ymin, ymax)

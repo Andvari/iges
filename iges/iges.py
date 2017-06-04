@@ -5,10 +5,10 @@ from solid import Solid
 #file = open("cube.IGS", "r")
 file = open("g-part.IGS", "r")
 
-solid = Solid(file, 1)
+solid = Solid(file, 0)
 
 for face in solid:
-    print(face)
+    print(face.image('XY'))
 #solid_ = Solid(file, 0)
 
 '''
