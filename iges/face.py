@@ -1,6 +1,6 @@
 from edge import Edge
 from entities import cw, ccw, acw, accw
-
+from image import Image
 
 class Face:
     def __init__(self, f : []):
@@ -100,6 +100,10 @@ class Face:
         print('---------')
 
     def image(self, p):
+
+        img = []
         for e in self.edges:
-            xmin, xmax, ymin, ymax, img = e.image(p)
-            print(xmin, xmax, ymin, ymax)
+            img += e.image(p)
+
+        im = Image(img)
+        return im

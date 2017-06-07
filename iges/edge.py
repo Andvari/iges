@@ -64,30 +64,35 @@ class Edge:
             print(self.p2.z - self.p1.z)
 
     def image(self, p):
-        print(self.p1.x, self.p2.x, self.p1.y, self.p2.y, self.p1.z, self.p2.z)
-        print(self.plane())
+        x0 = 0
+        y0 = 0
+        x1 = 0
+        y1 = 0
         if p == 'YZ':
-            amin = min(self.p(0).y, self.p(1).y)
-            amax = max(self.p(0).y, self.p(1).y)
-            bmin = min(self.p(0).z, self.p(1).z)
-            bmax = max(self.p(0).z, self.p(1).z)
+            x0 = self.p(0).y
+            x1 = self.p(1).y
+            y0 = self.p(0).z
+            y1 = self.p(1).z
         if p == 'XZ':
-            amin = min(self.p(0).x, self.p(1).x)
-            amax = max(self.p(0).x, self.p(1).x)
-            bmin = min(self.p(0).z, self.p(1).z)
-            bmax = max(self.p(0).z, self.p(1).z)
+            x0 = self.p(0).x
+            x1 = self.p(1).x
+            y0 = self.p(0).z
+            y1 = self.p(1).z
         if p == 'XY':
-            amin = min(self.p(0).x, self.p(1).x)
-            amax = max(self.p(0).x, self.p(1).x)
-            bmin = min(self.p(0).y, self.p(1).y)
-            bmax = max(self.p(0).y, self.p(1).y)
+            x0 = self.p(0).x
+            x1 = self.p(1).x
+            y0 = self.p(0).y
+            y1 = self.p(1).y
 
-        img = [['.' for x in range(int(amax-amin))] for y in range(int(bmax-bmin))]
+        img = []
+        if x0 == x1:
+            for y in range(int(min(y0, y1)), int(max(y0, y1))+1):
+                img.append((x0, float(y)))
+            return img
 
-        k = (bmax - bmin)/(amax - amin)
-        b = bmin - k*amin
+        if y0 == y1:
+            for x in range(int(min(x0, x1)), int(max(x0, x1))+1):
+                img.append((float(x), y0))
+            return img
 
-        for x in range(amax - amin):
-            img[int(k*x+b)][int(x)] = '*'
-
-        return amin, amax, bmin, bmax, img
+# todo: diagonal lines

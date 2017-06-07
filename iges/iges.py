@@ -7,9 +7,11 @@ file = open("g-part.IGS", "r")
 
 solid = Solid(file, 0)
 
+p = 'XY'
+print("Plane: ", p)
 for face in solid:
-    print(face.image('XY'))
-#solid_ = Solid(file, 0)
+    face.image(p).print()
+    print()
 
 '''
 ff = face_to_face_matrix(solid, 0)
