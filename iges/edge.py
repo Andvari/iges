@@ -95,4 +95,19 @@ class Edge:
                 img.append((float(x), y0))
             return img
 
-# todo: diagonal lines
+    def reverse(self):
+        return Edge(self.p2, self.p1)
+
+    def equ(self, e):
+        if e.p(0).xyz() == self.p(0).xyz():
+            if e.p(1).xyz() == self.p(1).xyz():
+                return True
+
+        if e.p(0).xyz() == self.p(1).xyz():
+            if e.p(1).xyz() == self.p(0).xyz():
+                return True
+
+        return False
+
+
+            # todo: diagonal lines

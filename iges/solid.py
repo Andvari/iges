@@ -6,7 +6,9 @@ import os
 import sys
 
 class Solid:
-    def __init__(self, f, log):
+    def __init__(self, fname, log):
+        f = open(fname, "r")
+
         self.i = 0
         if log == 0:
             save_stdout = sys.stdout
@@ -68,6 +70,8 @@ class Solid:
 
         if log == 0:
             sys.stdout = save_stdout
+
+        f.close()
 
     def sections_detect(self, content):
         ss = ""
@@ -589,3 +593,18 @@ class Solid:
 
         return f
 
+    def ff(self, face, edge):
+
+        c = []
+        for i in range(len(self.faces)):
+            for e in self.faces[i]:
+                #print(e.p(0).xyz(), e.p(1).xyz(), "   ", edge.p(0).xyz(), edge.p(1).xyz())
+                #print(e.p(0).xyz(), e.p(1).xyz(), "   ", edge.reverse().p(0).xyz(), edge.reverse().p(1).xyz())
+                #print('---------------------------------')
+                if e.equ(edge):
+                    t = Face()
+                    for e in self.faces[i]:
+                        t.append(e)
+                    c.append(t)
+
+        return c

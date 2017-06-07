@@ -53,18 +53,18 @@ class Face:
             route = m[e+0] + m[(e+1)%len(m)]
 
             if route == acw['X'][0] or route == acw['X'][1] or route == acw['X'][2] or route == acw['X'][3]:
-                a_cw.append((e, e+1))
+                a_cw.append((self.edges[e], self.edges[e+1]))
             if route == acw['Y'][0] or route == acw['Y'][1] or route == acw['Y'][2] or route == acw['Y'][3]:
-                a_cw.append((e, e+1))
+                a_cw.append((self.edges[e], self.edges[e+1]))
             if route == acw['Z'][0] or route == acw['Z'][1] or route == acw['Z'][2] or route == acw['Z'][3]:
-                a_cw.append((e, e+1))
+                a_cw.append((self.edges[e], self.edges[e+1]))
 
             if route == accw['X'][0] or route == accw['X'][1] or route == accw['X'][2] or route == accw['X'][3]:
-                a_ccw.append((e, e+1))
+                a_ccw.append((self.edges[e], self.edges[e+1]))
             if route == accw['Y'][0] or route == accw['Y'][1] or route == accw['Y'][2] or route == accw['Y'][3]:
-                a_ccw.append((e, e+1))
+                a_ccw.append((self.edges[e], self.edges[e+1]))
             if route == accw['Z'][0] or route == accw['Z'][1] or route == accw['Z'][2] or route == accw['Z'][3]:
-                a_ccw.append((e, e+1))
+                a_ccw.append((self.edges[e], self.edges[e+1]))
 
         if vote_cw > vote_ccw:
             return a_cw
@@ -107,3 +107,21 @@ class Face:
 
         im = Image(img)
         return im
+
+    def equ(self, face):
+        if len(self.edges) != len(face.edges):
+            return False
+
+        n = 0
+        for i in range(len(self.edges)):
+            for j in range(len(face.edges)):
+                if self.edges[i].equ(face.edges[j]):
+                    n += 1
+                    break
+
+        if n == len(self.edges):
+            return True
+
+        return False
+
+
