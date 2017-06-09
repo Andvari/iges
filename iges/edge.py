@@ -1,88 +1,91 @@
 from virtex import Virtex
+from direction import Direction
+
 
 class Edge:
-    def __init__(self, p1, p2):
-        self.p1 = p1
-        self.p2 = p2
+    def __init__(self):
+        self.p = []
+        self.p.append(Virtex())
+        self.p.append(Virtex())
 
-    def update(self, p1, p2):
-        self.p1 = p1
-        self.p2 = p2
+    def __init__(self, start: Virtex, end: Virtex):
+        self.p = []
+        self.p.append(start)
+        self.p.append(end)
 
-    def update(self, n, p):
-        if n == 0:
-            self.p1 = p
-        if n == 1:
-            self.p2 = p
+    def update(self, start: Virtex, end: Virtex):
+        self.p[0].update(start)
+        self.p[1].update(end)
+
+    def update(self, n: int, p: Virtex):
+        self.p[n].update(p)
 
     def pp(self):
-        return self.p1, self.p2
+        return self.p
 
-    def p(self, n):
-        if n == 0:
-            return self.p1
-        if n == 1:
-            return self.p2
+    def p(self, n: int):
+        return self.p[n]
 
-    def dir(self):
-        d = ""
-        if self.p1.x < self.p2.x:
-            d += "X+"
-        if self.p1.y < self.p2.y:
-            d += "Y+"
-        if self.p1.z < self.p2.z:
-            d += "Z+"
-        if self.p1.x > self.p2.x:
-            d += "X-"
-        if self.p1.y > self.p2.y:
-            d += "Y-"
-        if self.p1.z > self.p2.z:
-            d += "Z-"
-        return d
+    def way(self):
+        way = []
+        if self.p[0].value('X') < self.p[1].value('X'):
+            way.append(('X', '+'))
+        if self.p[0].value('Y') < self.p[1].value('Y'):
+            way.append(('Y', '+'))
+        if self.p[0].value('Z') < self.p[1].value('Z'):
+            way.append(('Z', '+'))
+        if self.p[0].value('X') > self.p[1].value('X'):
+            way.append(('X', '-'))
+        if self.p[0].value('Y') > self.p[1].value('Y'):
+            way.append(('Y', '-'))
+        if self.p[0].value('Z') > self.p[1].value('Z'):
+            way.append(('Z', '-'))
+        return way
 
     def plane(self):
         p = []
-        xs, ys, zs = self.p1.xyz()
-        xe, ye, ze = self.p2.xyz()
+        p0 = self.p[0].value()
+        p1 = self.p[1].value()
 
-        if xs == xe:
-            p.append('YZ')
-        if ys == ye:
-            p.append('XZ')
-        if zs == ze:
-            p.append('XY')
+        if p0['X'] == p1['X']:
+            p.append(('Y', 'Z'))
+        if p0['Y'] == p1['Y']:
+            p.append(('X', 'Z'))
+        if p0['Z'] == p1['Z']:
+            p.append(('X', 'Y'))
 
         return p
 
     def print(self):
-        print(self.dir(), " ", end="")
-        if self.dir()[0] == 'X':
-            print(self.p2.x - self.p1.x)
-        if self.dir()[0] == 'Y':
-            print(self.p2.y - self.p1.y)
-        if self.dir()[0] == 'Z':
-            print(self.p2.z - self.p1.z)
+        print(self.way(), " ", end="")
+        for coord, sign in self.way():
+            if coord == 'X':
+                print(self.p[1].value('X') - self.p[0].value('X'), end="")
+            if coord == 'Y':
+                print(self.p[1].value('Y') - self.p[0].value('Y'), end="")
+            if coord == 'Z':
+                print(self.p[1].value('Z') - self.p[0].value('Z'), end="")
 
     def image(self, p):
         x0 = 0
         y0 = 0
         x1 = 0
         y1 = 0
-        if p == 'YZ':
-            x0 = self.p(0).y
-            x1 = self.p(1).y
-            y0 = self.p(0).z
-            y1 = self.p(1).z
-        if p == 'XZ':
-            x0 = self.p(0).x
-            x1 = self.p(1).x
-            y0 = self.p(0).z
-            y1 = self.p(1).z
-        if p == 'XY':
-            x0 = self.p(0).x
-            x1 = self.p(1).x
-            y0 = self.p(0).y
-            y1 = self.p(1).y
+        if p == ('Y', 'Z'):
+            x0 = self.p[0].value('Y')
+            x1 = self.p[1].value('Y')
+            y0 = self.p[0].value('Z')
+            y1 = self.p[1].value('Z')
+        if p == ('X', 'Z'):
+            x0 = self.p[0].value('X')
+            x1 = self.p[1].value('X')
+            y0 = self.p[0].value('Z')
+            y1 = self.p[1].value('Z')
+        if p == ('X', 'Y'):
+            x0 = self.p[0].value('X')
+            x1 = self.p[1].value('X')
+            y0 = self.p[0].value('Y')
+            y1 = self.p[1].value('Y')
 
         img = []
         if x0 == x1:
@@ -96,18 +99,25 @@ class Edge:
             return img
 
     def reverse(self):
-        return Edge(self.p2, self.p1)
+        return Edge(self.p[1], self.p[0])
 
     def equ(self, e):
-        if e.p(0).xyz() == self.p(0).xyz():
-            if e.p(1).xyz() == self.p(1).xyz():
-                return True
-
-        if e.p(0).xyz() == self.p(1).xyz():
-            if e.p(1).xyz() == self.p(0).xyz():
-                return True
-
+        if e.p[0].equ(self.p[0]) and e.p[1].equ(self.p[1]):
+            return True
+        if e.p[0].equ(self.p[1]) and e.p[1].equ(self.p[0]):
+            return True
         return False
 
+    def expand(self, way: [], bias: int):
+        for c, s in way:
+            if s == '+':
+                self.p[1].update(c, bias)
+            if s == '-':
+                self.p[0].update(c, bias)
 
-            # todo: diagonal lines
+    def move(self, way: [], bias: int):
+        for c, s in way:
+            self.p[0].update(c, bias)
+            self.p[1].update(c, bias)
+
+

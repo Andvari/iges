@@ -1,9 +1,12 @@
 from virtex import Virtex
 from edge import Edge
 from face import Face
+from direction import Direction
 from entities import *
+
 import os
 import sys
+
 
 class Solid:
     def __init__(self, fname, log):
@@ -568,43 +571,19 @@ class Solid:
 
         return s
 
-    def face_to_face_matrix(self, s, log):
-        f = [[len(s) for x in range(len(s))] for y in range(len(s))]
-
-        for i in range(len(s)):
-            for j in range(i+1, len(s)):
-                for k in range(len(s[i])):
-                    for l in range(len(s[j])):
-                        p1, p2 = s[i][k]
-                        p3, p4 = s[j][l]
-                        if (p1 == p3 and p2 == p4) or (p1 == p4 and p2 == p3):
-                            f[i][j] = k
-                            f[j][i] = l
-        return f
-
-    def face_to_edge_matrix(s, log):
-        f = []
-        for i in range(len(s)):
-            l = []
-            for j in range(len(s)):
-                if s[i][j] != len(s):
-                  l.append(j)
-            f.append(l)
-
-        return f
-
-    def ff(self, face, edge):
-
-        c = []
-        for i in range(len(self.faces)):
-            for e in self.faces[i]:
-                #print(e.p(0).xyz(), e.p(1).xyz(), "   ", edge.p(0).xyz(), edge.p(1).xyz())
-                #print(e.p(0).xyz(), e.p(1).xyz(), "   ", edge.reverse().p(0).xyz(), edge.reverse().p(1).xyz())
-                #print('---------------------------------')
+    def ff(self, face: Face, edge: Edge):
+        for f in self.faces:
+            for e in f:
                 if e.equ(edge):
-                    t = Face()
-                    for e in self.faces[i]:
-                        t.append(e)
-                    c.append(t)
+                    if f.equ(face):
+                        continue
+                    else:
+                        return Face(self.faces)
 
-        return c
+        return Face()
+
+    def expand(self, face: Face, edge: Edge, way: Direction, d: int):
+        for f in self.faces:
+            if f.equ(face):
+                f.expand(edge, way, d)
+

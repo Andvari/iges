@@ -1,8 +1,21 @@
 from solid import Solid
+from virtex import Virtex
 
 
 #file = open("cube_fc.iges", "r")
 #file = open("cube.IGS", "r")
+
+a = {}
+a['X'] = 0
+a['Y'] = 1
+a['Z'] = 2
+b = {}
+b['X'] = 0
+
+print(a==b)
+
+while True:
+    pass
 
 solid = Solid("g-part.IGS", 0)
 solid_ = Solid("g-part.IGS", 0)
@@ -19,24 +32,16 @@ ff = face_to_face_matrix(solid, 0)
 fe = face_to_edge_matrix(ff, 0)
 '''
 for face in solid:
-    for anomalie in face.anomalies():
-        for e in anomalie:
-            d = e.dir()
-            #print(e.p(0).xyz(), e.p(1).xyz())
-            f = solid.ff(face, e)
-            if f[0].equ(face):
-                f[1].image(f[1].plane()).print()
-            if f[1].equ(face):
-                f[0].image(f[0].plane()).print()
+    for e1, e2 in face.anomalies():
+        print(e1, e2)
+        d = e1.dir()
+        f = solid.ff(face, e1)
+        solid_.expand(f, e1, d, 1)
 
-            '''
-            e1 = solid.fe(face, f)
-            d1 = e1.dir()
+        d = e2.dir()
+        f = solid.ff(face, e2)
+        solid_.expand(f, e2, d, 1)
 
-            if d == d1:
-                solid_.expand(f, e, d)
-            else:
-                solid_.expand(f, e, d1)
-            '''
+
 
 

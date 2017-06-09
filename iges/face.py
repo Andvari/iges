@@ -1,9 +1,12 @@
 from edge import Edge
 from entities import cw, ccw, acw, accw
 from image import Image
+from virtex import Virtex
+from direction import Direction
+
 
 class Face:
-    def __init__(self, f : []):
+    def __init__(self, f: []):
         self.edges = []
         for e in f:
             self.edges.append(e)
@@ -11,7 +14,7 @@ class Face:
     def __init__(self):
         self.edges = []
 
-    def append(self, e):
+    def append(self, e: Edge):
         self.edges.append(e)
 
     def edges(self):
@@ -124,4 +127,42 @@ class Face:
 
         return False
 
+    def expand(self, edge: Edge, way: Direction, d: int):
 
+        for i in len(self.edges):
+            if self.edges[i].equ(edge):
+                idx = i
+                break
+
+        if self.edges[idx].way() == way:
+            x, y, z = self.edges[idx].xyz()
+            if way == 'X+':
+                self.edges[(idx + 0) % len(self.edges)].update(1, Virtex(x + d, y + 0, z + 0))
+                self.edges[(idx + 1) % len(self.edges)].update(0, Virtex(x + d, y + 0, z + 0))
+                self.edges[(idx + 1) % len(self.edges)].update(1, Virtex(x + d, y + 0, z + 0))
+                self.edges[(idx + 2) % len(self.edges)].update(0, Virtex(x + d, y + 0, z + 0))
+            if dir == 'Y+':
+                self.edges[(idx + 0) % len(self.edges)].update(1, Virtex(x + 0, y + d, z + 0))
+                self.edges[(idx + 1) % len(self.edges)].update(0, Virtex(x + 0, y + d, z + 0))
+                self.edges[(idx + 1) % len(self.edges)].update(1, Virtex(x + 0, y + d, z + 0))
+                self.edges[(idx + 2) % len(self.edges)].update(0, Virtex(x + 0, y + d, z + 0))
+            if dir == 'Z+':
+                self.edges[(idx + 0) % len(self.edges)].update(1, Virtex(x + 0, y + 0, z + d))
+                self.edges[(idx + 1) % len(self.edges)].update(0, Virtex(x + 0, y + 0, z + d))
+                self.edges[(idx + 1) % len(self.edges)].update(1, Virtex(x + 0, y + 0, z + d))
+                self.edges[(idx + 2) % len(self.edges)].update(0, Virtex(x + 0, y + 0, z + d))
+            if dir == 'X-':
+                self.edges[(idx + 0) % len(self.edges)].update(0, Virtex(x - d, y + 0, z + 0))
+                self.edges[(idx - 1) % len(self.edges)].update(1, Virtex(x - d, y + 0, z + 0))
+                self.edges[(idx - 1) % len(self.edges)].update(0, Virtex(x - d, y + 0, z + 0))
+                self.edges[(idx - 2) % len(self.edges)].update(1, Virtex(x - d, y + 0, z + 0))
+            if dir == 'Y-':
+                self.edges[(idx + 0) % len(self.edges)].update(0, Virtex(x + 0, y - d, z + 0))
+                self.edges[(idx - 1) % len(self.edges)].update(1, Virtex(x + 0, y - d, z + 0))
+                self.edges[(idx - 1) % len(self.edges)].update(0, Virtex(x + 0, y - d, z + 0))
+                self.edges[(idx - 2) % len(self.edges)].update(1, Virtex(x + 0, y - d, z + 0))
+            if dir == 'Z-':
+                self.edges[(idx + 0) % len(self.edges)].update(0, Virtex(x + 0, y + 0, z - d))
+                self.edges[(idx - 1) % len(self.edges)].update(1, Virtex(x + 0, y + 0, z - d))
+                self.edges[(idx - 1) % len(self.edges)].update(0, Virtex(x + 0, y + 0, z - d))
+                self.edges[(idx - 2) % len(self.edges)].update(1, Virtex(x + 0, y + 0, z - d))
