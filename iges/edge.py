@@ -3,27 +3,22 @@ from direction import Direction
 
 
 class Edge:
-    def __init__(self):
-        self.p = []
-        self.p.append(Virtex())
-        self.p.append(Virtex())
-
     def __init__(self, start: Virtex, end: Virtex):
         self.p = []
         self.p.append(start)
         self.p.append(end)
 
-    def update(self, start: Virtex, end: Virtex):
-        self.p[0].update(start)
-        self.p[1].update(end)
+    #def update(self, start: Virtex, end: Virtex):
+        #self.p[0].update(start)
+        #self.p[1].update(end)
 
-    def update(self, n: int, p: Virtex):
-        self.p[n].update(p)
+    def update(self, *args):
+        self.p[args[0]].update(args[1], args[2])
 
-    def pp(self):
+    def points(self):
         return self.p
 
-    def p(self, n: int):
+    def point(self, n: int):
         return self.p[n]
 
     def way(self):
@@ -57,31 +52,28 @@ class Edge:
         return p
 
     def print(self):
-        print(self.way(), " ", end="")
-        for coord, sign in self.way():
-            if coord == 'X':
-                print(self.p[1].value('X') - self.p[0].value('X'), end="")
-            if coord == 'Y':
-                print(self.p[1].value('Y') - self.p[0].value('Y'), end="")
-            if coord == 'Z':
-                print(self.p[1].value('Z') - self.p[0].value('Z'), end="")
+        #print(self.way(), " ", end="")
+        #for coord, sign in self.way():
+        #    print(coord, sign)
+        print(self.p[0].value(), self.p[1].value)
+
 
     def image(self, p):
         x0 = 0
         y0 = 0
         x1 = 0
         y1 = 0
-        if p == ('Y', 'Z'):
+        if p == 'YZ':
             x0 = self.p[0].value('Y')
             x1 = self.p[1].value('Y')
             y0 = self.p[0].value('Z')
             y1 = self.p[1].value('Z')
-        if p == ('X', 'Z'):
+        if p == 'XZ':
             x0 = self.p[0].value('X')
             x1 = self.p[1].value('X')
             y0 = self.p[0].value('Z')
             y1 = self.p[1].value('Z')
-        if p == ('X', 'Y'):
+        if p == 'XY':
             x0 = self.p[0].value('X')
             x1 = self.p[1].value('X')
             y0 = self.p[0].value('Y')

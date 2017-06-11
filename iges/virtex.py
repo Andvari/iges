@@ -1,26 +1,29 @@
 class Virtex:
-    def __init__(self, x: int, y: int, z: int):
+    def __init__(self, x: float, y: float, z: float):
         self.coordinates = {'X': x, 'Y': y, 'Z': z}
 
-    def update(self, v):
-        self.coordinates['X'] = v.value('X')
-        self.coordinates['Y'] = v.value('Y')
-        self.coordinates['Z'] = v.value('Z')
+    def update(self, *args):
 
-    def update(self, c: '', bias: int):
-        self.coordinates[c] += bias
+        if len(args) == 1:
+            self.coordinates['X'] = args[0].value('X')
+            self.coordinates['Y'] = args[0].value('Y')
+            self.coordinates['Z'] = args[0].value('Z')
+            return
 
-    def value(self, l: []):
-        v = {}
-        for c in l:
-            v[c] = self.coordinates[c]
+        self.coordinates[args[0]] += args[1]
+
+    def value(self, *args):
+        if len(args) == 0:
+            return self.coordinates
+
+        if len(args) == 1:
+            return self.coordinates[args[0]]
+
+        v = []
+        for a in args:
+            v.append(self.coordinates[a])
+
         return v
-
-    def value(self, c: ''):
-        return self.coordinates[c]
-
-    def value(self):
-        return self.coordinates
 
     def equ(self, v):
         if self.value() == v.value():

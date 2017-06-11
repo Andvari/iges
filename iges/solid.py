@@ -138,13 +138,10 @@ class Solid:
     def __next__(self):
         if self.i < len(self.faces):
             self.i += 1
-
-            a = Face()
-            for e in self.faces[self.i-1]:
-                a.append(e)
-            return a
+            return self.faces[self.i-1]
 
         else:
+            self.i = 0
             raise StopIteration
 
     def global_section_parser(self, l):
@@ -445,7 +442,7 @@ class Solid:
                 self.prefix(l + 1)
                 print("   ", "Form: ", e['Form Number'], sep="")
                 self.prefix(l + 1)
-                print("   ", p1, p2, sep="")
+                print("   ", p1.value(), p2.value(), sep="")
             else:
                 self.prefix(l + 1)
                 print("   ", "Not implemented yet")
@@ -498,7 +495,7 @@ class Solid:
                         if eee["Sequence Number"] == de[i]:
                             typ, obj = self.process_entity(l + 2, de_, pd_, eee)
                             if typ == 'face':
-                                body.append(obj)
+                                body.append(Face(obj))
                             break
             else:
                 self.prefix(l + 1)
@@ -567,7 +564,7 @@ class Solid:
                 if typ == 'Solid':
                     s = obj
                 if typ == 'face':
-                    s.append(obj)
+                    s.append(Face(obj))
 
         return s
 
@@ -578,12 +575,15 @@ class Solid:
                     if f.equ(face):
                         continue
                     else:
-                        return Face(self.faces)
+                        return f
 
         return Face()
 
     def expand(self, face: Face, edge: Edge, way: Direction, d: int):
+        i=0
         for f in self.faces:
+            i+=1
             if f.equ(face):
                 f.expand(edge, way, d)
+                break
 

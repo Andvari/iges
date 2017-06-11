@@ -26,6 +26,7 @@ class Image:
         self.points.append((xmax, ymax))
         '''
 
+
         img = [[' ' for x in range(int(xmax-xmin)+1)] for y in range(int(ymax-ymin)+1)]
 
         for x, y in self.points:
