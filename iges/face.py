@@ -175,3 +175,20 @@ class Face:
         else:
             self.i = 0
             raise StopIteration
+
+    def coordinate(self, p):
+        m = -1e6
+        for e in self.edges_:
+            m = max(m, e.point(0).value(p))
+            m = max(m, e.point(1).value(p))
+        return m
+
+    def cross(self, face):
+        if self.plane() == face.plane():
+            for e in self.edges_:
+                for ee in face.edges():
+                    if e.cross(ee):
+
+            return True
+
+        return False

@@ -69,7 +69,7 @@ class Solid:
 
         # print(pd_sec)
 
-        self.faces = self.solid_detect(de_sec, pd_sec)
+        self.faces_ = self.solid_detect(de_sec, pd_sec)
 
         if log == 0:
             sys.stdout = save_stdout
@@ -136,9 +136,9 @@ class Solid:
         return self
 
     def __next__(self):
-        if self.i < len(self.faces):
+        if self.i < len(self.faces_):
             self.i += 1
-            return self.faces[self.i-1]
+            return self.faces_[self.i-1]
 
         else:
             self.i = 0
@@ -569,7 +569,7 @@ class Solid:
         return s
 
     def ff(self, face: Face, edge: Edge):
-        for f in self.faces:
+        for f in self.faces_:
             for e in f:
                 if e.equ(edge):
                     if f.equ(face):
@@ -580,10 +580,55 @@ class Solid:
         return Face()
 
     def expand(self, face: Face, edge: Edge, way: Direction, d: int):
-        i=0
-        for f in self.faces:
-            i+=1
+        for f in self.faces_:
             if f.equ(face):
                 f.expand(edge, way, d)
                 break
+
+    def faces(self):
+        return self.faces_
+
+    def faces_by_plane(self, planes):
+        f = []
+        for plane in planes:
+            for face in self.faces_:
+                if face.plane() == plane:
+                    f.append(face)
+        return f
+
+    def delete(self, face):
+        updated = []
+        for i in range(len(self.faces_)):
+            if not self.faces_[i].equ(face):
+                updated.append(self.faces_[i])
+        self.faces_ = updated
+
+    def replace(self, face_out, face_in):
+        self.delete(face_out)
+        self.faces_.append(face_in)
+
+    def optimize(self, plane):
+        to_delete = []
+        to_append = []
+        for i in range(len(self.faces_)):
+            if self.faces_[i].plane() == plane:
+                for j in range(i+1, len(self.faces_)):
+                    pin1  = self.faces_[i].pointin(self.faces_[j])
+                    pout1 = self.faces_[i].pointout(self.faces_[j])
+                    pin2  = self.faces_[j].pointin(self.faces_[i])
+                    pout2 = self.faces_[j].pointout(self.faces_[i])
+
+
+                    f = self.faces_[i].merge(self.faces_[j])
+                        to_delete.append(self.faces_[i])
+                        to_delete.append(self.faces_[j])
+                        to_append.append(f)
+
+        for face in to_delete:
+            self.delete(face)
+
+        for face in to_append:
+            self.faces_.append(face)
+
+
 

@@ -2,24 +2,20 @@ from solid import Solid
 from virtex import Virtex
 
 
-#file = open("cube_fc.iges", "r")
-#file = open("cube.IGS", "r")
+filename = 'pyram.IGS'
 
+solid = Solid(filename, 0)
+solid_ = Solid(filename, 0)
 
-solid = Solid("g-part-fc.IGS", 0)
-solid_ = Solid("g-part-fc.IGS", 0)
-
-
+print("Object:")
 for face in solid_:
     face.image(face.plane()).print()
     print()
+print('---------------')
 
+solid = Solid(filename, 0)
 
-solid = Solid("g-part-fc.IGS", 0)
-
-i=0
 for face in solid:
-    i+=1
     for e1, e2 in face.anomalies():
         d = e1.way()
         f = solid.ff(face, e1)
@@ -27,11 +23,10 @@ for face in solid:
 
         d = e2.way()
         f = solid.ff(face, e2)
-        f.image(f.plane()).print()
         solid_.expand(f, e2, d, 1)
 
-for face in solid_:
-    face.image(face.plane()).print()
-    print()
+top_faces = solid_.faces_by_plane(['XY'])
+side_faces = solid_.faces_by_plane(['YZ', 'XZ'])
 
-
+print(top_faces)
+print(side_faces)
