@@ -181,3 +181,6 @@ accw = {'X': ['Y+Z-', 'Z+Y+', 'Y-Z+', 'Z-Y-'],
         'Y': ['X-Z-', 'Z+X-', 'X+Z+', 'Z-X+'],
         'Z': ['X+Y-', 'Y+X+', 'X-Y+', 'Y-X-']}
 
+ORIENTATION_CW = 0
+ORIENTATION_CCW = 1
+ORIENTATION_UNKNOWN = -1

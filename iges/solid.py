@@ -596,7 +596,7 @@ class Solid:
                     f.append(face)
         return f
 
-    def delete(self, face):
+    def remove(self, face):
         updated = []
         for i in range(len(self.faces_)):
             if not self.faces_[i].equ(face):
@@ -608,27 +608,26 @@ class Solid:
         self.faces_.append(face_in)
 
     def optimize(self, plane):
-        to_delete = []
+        to_remove = []
         to_append = []
         for i in range(len(self.faces_)):
             if self.faces_[i].plane() == plane:
                 for j in range(i+1, len(self.faces_)):
-                    pin1  = self.faces_[i].pointin(self.faces_[j])
-                    pout1 = self.faces_[i].pointout(self.faces_[j])
-                    pin2  = self.faces_[j].pointin(self.faces_[i])
-                    pout2 = self.faces_[j].pointout(self.faces_[i])
+                    if self.faces_[i].orientation() == self.faces_[j].orientation():
+                        if self.faces_[i].cross(self.faces_[j]):
+                            f = self.faces_[i].merge(self.faces_[j])
+                            to_remove.append(self.faces_[i])
+                            to_remove.append(self.faces_[j])
+                            to_append.append(f)
 
-
-                    f = self.faces_[i].merge(self.faces_[j])
-                        to_delete.append(self.faces_[i])
-                        to_delete.append(self.faces_[j])
-                        to_append.append(f)
-
-        for face in to_delete:
-            self.delete(face)
+        for face in to_remove:
+            self.remove(face)
 
         for face in to_append:
             self.faces_.append(face)
 
 
+edges1_inside1 = self.faces_[i].inside(self.faces_[j])
+edges2_inside1 = self.faces_[j].inside(self.faces_[i])
+edges_crossed = self.faces_[i].inside(self.faces_[j])
 

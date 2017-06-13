@@ -1,5 +1,6 @@
 from edge import Edge
 from entities import cw, ccw, acw, accw
+from entities import ORIENTATION_CW, ORIENTATION_CCW, ORIENTATION_UNKNOWN
 from image import Image
 from virtex import Virtex
 from direction import Direction
@@ -9,6 +10,7 @@ class Face:
     def __init__(self, *args):
         self.i = 0
         self.edges_ = []
+        self.orient = ORIENTATION_UNKNOWN
         if len(args) == 0:
             return
 
@@ -33,7 +35,7 @@ class Face:
     def size(self):
         return len(self.edges_)
 
-    def anomalies(self):
+    def orientation(self):
         m = []
         for edge in self.edges_:
             c, s = edge.way()[0]
@@ -58,6 +60,26 @@ class Face:
             if route == ccw['Z'][0] or route == ccw['Z'][1]:
                 vote_ccw += 1
 
+        if vote_cw > vote_ccw:
+            self.orient = ORIENTATION_CW
+        else:
+            self.orient = ORIENTATION_CCW
+
+        return self.orient
+
+    def anomalies(self):
+
+        if self.orient == ORIENTATION_UNKNOWN:
+            self.orientation()
+
+        m = []
+        for edge in self.edges_:
+            c, s = edge.way()[0]
+            m.append(c+s)
+
+        a_cw = []
+        a_ccw = []
+        for e in range(len(m)-2):
             route = m[e+0] + m[(e+1)%len(m)]
 
             if route == acw['X'][0] or route == acw['X'][1] or route == acw['X'][2] or route == acw['X'][3]:
@@ -74,7 +96,7 @@ class Face:
             if route == accw['Z'][0] or route == accw['Z'][1] or route == accw['Z'][2] or route == accw['Z'][3]:
                 a_ccw.append((self.edges_[e], self.edges_[e+1]))
 
-        if vote_cw > vote_ccw:
+        if self.orient == ORIENTATION_CW:
             return a_cw
         else:
             return a_ccw
@@ -101,6 +123,13 @@ class Face:
             p += "XZ"
 
         return p
+
+    def mirror(self):
+        t = list(reversed(self.edges_))
+        self.edges_ = t
+        for e in self.edges_:
+            e.reverse()
+
 
     def print(self):
         for e in self.edges_:
@@ -184,7 +213,11 @@ class Face:
         return m
 
     def cross(self, face):
-        if self.plane() == face.plane():
+        if not self.plane() == face.plane():
+            return False
+
+
+        if self.
             for e in self.edges_:
                 for ee in face.edges():
                     if e.cross(ee):
