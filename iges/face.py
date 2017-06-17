@@ -4,7 +4,7 @@ from entities import ORIENTATION_CW, ORIENTATION_CCW, ORIENTATION_UNKNOWN
 from image import Image
 from virtex import Virtex
 from direction import Direction
-
+from plane import Plane
 
 class Face:
     def __init__(self, *args):
@@ -15,9 +15,9 @@ class Face:
             return
 
         if len(args) == 1:
-            i=0
+            i = 0
             for e in args[0]:
-                i+=1
+                i += 1
                 self.edges_.append(e)
 
     def append(self, e: Edge):
@@ -102,27 +102,7 @@ class Face:
             return a_ccw
 
     def plane(self):
-        xy = 0
-        yz = 0
-        xz = 0
-        for e in self.edges_:
-            for p in e.plane():
-                if p == ('X', 'Y'):
-                    xy += 1
-                if p == ('Y', 'Z'):
-                    yz += 1
-                if p == ('X', 'Z'):
-                    xz += 1
-
-        p = ""
-        if xy == len(self.edges_):
-            p += "XY"
-        if yz == len(self.edges_):
-            p += "YZ"
-        if xz == len(self.edges_):
-            p += "XZ"
-
-        return p
+        return Plane([self.edges_[0].point(0), self.edges_[0].point(1), self.edges_[1].point(1)])
 
     def mirror(self):
         t = list(reversed(self.edges_))
@@ -130,20 +110,16 @@ class Face:
         for e in self.edges_:
             e.reverse()
 
-
     def print(self):
         for e in self.edges_:
             e.print()
         print('---------')
 
     def image(self, p):
-
         img = []
         for e in self.edges_:
             img += e.image(p)
-
-        im = Image(img)
-        return im
+        return Image(img)
 
     def equ(self, face):
         if len(self.edges_) != len(face.edges()):
@@ -213,15 +189,12 @@ class Face:
         return m
 
     def cross(self, face):
-        if not self.plane() == face.plane():
-            return False
+        if not self.plane().coincide(face.plane()):
+            return {}
 
+        for e in self.edges_:
+            for ee in face.edges():
+                if e.cross(ee, face.plane()):
+                    return e.cross(ee, face.plane())
 
-        if self.
-            for e in self.edges_:
-                for ee in face.edges():
-                    if e.cross(ee):
-
-            return True
-
-        return False
+        return {}

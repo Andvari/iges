@@ -588,11 +588,19 @@ class Solid:
     def faces(self):
         return self.faces_
 
-    def faces_by_plane(self, planes):
+    def coincide_faces(self, planes):
         f = []
         for plane in planes:
             for face in self.faces_:
-                if face.plane() == plane:
+                if face.plane().coincide(plane):
+                    f.append(face)
+        return f
+
+    def parallel_faces(self, planes):
+        f = []
+        for plane in planes:
+            for face in self.faces_:
+                if face.plane().parallel(plane):
                     f.append(face)
         return f
 
@@ -611,10 +619,12 @@ class Solid:
         to_remove = []
         to_append = []
         for i in range(len(self.faces_)):
-            if self.faces_[i].plane() == plane:
+            if self.faces_[i].plane().parallel(plane):
                 for j in range(i+1, len(self.faces_)):
                     if self.faces_[i].orientation() == self.faces_[j].orientation():
                         if self.faces_[i].cross(self.faces_[j]):
+                            self.faces_[i].print()
+                            self.faces_[j].print()
                             f = self.faces_[i].merge(self.faces_[j])
                             to_remove.append(self.faces_[i])
                             to_remove.append(self.faces_[j])
@@ -626,8 +636,4 @@ class Solid:
         for face in to_append:
             self.faces_.append(face)
 
-
-edges1_inside1 = self.faces_[i].inside(self.faces_[j])
-edges2_inside1 = self.faces_[j].inside(self.faces_[i])
-edges_crossed = self.faces_[i].inside(self.faces_[j])
 

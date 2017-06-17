@@ -1,5 +1,6 @@
 from solid import Solid
 from virtex import Virtex
+from plane import Plane
 
 
 filename = 'pyram.IGS'
@@ -7,11 +8,10 @@ filename = 'pyram.IGS'
 solid = Solid(filename, 0)
 solid_ = Solid(filename, 0)
 
-print("Object:")
-for face in solid_:
-    face.image(face.plane()).print()
-    print()
-print('---------------')
+#print("Object:")
+#for face in solid_:
+#    face.image(Plane('XY')).print()
+#    print()
 
 solid = Solid(filename, 0)
 
@@ -25,8 +25,15 @@ for face in solid:
         f = solid.ff(face, e2)
         solid_.expand(f, e2, d, 1)
 
-top_faces = solid_.faces_by_plane(['XY'])
-side_faces = solid_.faces_by_plane(['YZ', 'XZ'])
+print('--------------+')
+#top_faces = solid_.parallel_faces([Plane('XZ')])
+#side_faces = solid_.parallel_faces([Plane('YZ'), Plane('XZ')])
+#print(top_faces)
+#print(side_faces)
 
-print(top_faces)
-print(side_faces)
+print('-+-=')
+solid_.optimize(Plane('XY'))
+#print("Object:")
+#for face in solid_:
+#    face.image(Plane('XY')).print()
+#    print()

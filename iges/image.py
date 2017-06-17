@@ -33,7 +33,6 @@ class Image:
         for x, y in self.points:
             img[int(y-ymin)][int(x-xmin)] = '*'
 
-
         for l in img:
             for c in l:
                 print(c, sep ="", end = "")
