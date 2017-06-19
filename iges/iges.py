@@ -21,7 +21,7 @@ for face in solid:
         f = solid.ff(face, e1)
         solid_.expand(f, e1, d, 1)
 
-        d = e2.way()
+        d = e2.reverse().way()
         f = solid.ff(face, e2)
         solid_.expand(f, e2, d, 1)
 
@@ -31,9 +31,12 @@ print('--------------+')
 #print(top_faces)
 #print(side_faces)
 
+
 print('-+-=')
 solid_.optimize(Plane('XY'))
-#print("Object:")
-#for face in solid_:
-#    face.image(Plane('XY')).print()
-#    print()
+'''
+print("Object:")
+for face in solid_:
+    face.image(Plane('XY')).print()
+    print()
+'''

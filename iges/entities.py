@@ -186,3 +186,16 @@ ORIENTATION_CCW = 1
 ORIENTATION_UNKNOWN = -1
 
 PRECISION = 1e-6
+
+
+def equal(a, b):
+    if abs(a-b) < PRECISION:
+        return True
+
+    return False
+
+
+def inside(a, b, c):
+    if min(a, c) <= b <= max(a, c):
+        return True
+    return False

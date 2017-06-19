@@ -1,6 +1,7 @@
 from virtex import Virtex
 from entities import *
 
+
 class Plane:
     def __init__(self, *args):
         self.p = []
@@ -34,26 +35,26 @@ class Plane:
         a1, b1, c1, d1 = plane.abcd()
 
         k = []
-        if self.equ(a1, 0):
-            if not self.equ(a0, 0):
+        if equal(a1, 0):
+            if not equal(a0, 0):
                 return False
         else:
             k.append(a0/a1)
 
-        if self.equ(b1, 0):
-            if not self.equ(b0, 0):
+        if equal(b1, 0):
+            if not equal(b0, 0):
                 return False
         else:
             k.append(b0/b1)
 
-        if self.equ(c1, 0):
-            if not self.equ(c0, 0):
+        if equal(c1, 0):
+            if not equal(c0, 0):
                 return False
         else:
             k.append(c0/c1)
 
-        if self.equ(d1, 0):
-            if not self.equ(d0, 0):
+        if equal(d1, 0):
+            if not equal(d0, 0):
                 return False
         else:
             k.append(d0/d1)
@@ -62,7 +63,7 @@ class Plane:
             return True
 
         for i in range(1, len(k)):
-            if not self.equ(k[i-1], k[i]):
+            if not equal(k[i-1], k[i]):
                 return False
 
         return True
@@ -72,20 +73,20 @@ class Plane:
         a1, b1, c1, d1 = plane.abcd()
 
         k = []
-        if self.equ(a1, 0):
-            if not self.equ(a0, 0):
+        if equal(a1, 0):
+            if not equal(a0, 0):
                 return False
         else:
             k.append(a0/a1)
 
-        if self.equ(b1, 0):
-            if not self.equ(b0, 0):
+        if equal(b1, 0):
+            if not equal(b0, 0):
                 return False
         else:
             k.append(b0/b1)
 
-        if self.equ(c1, 0):
-            if not self.equ(c0, 0):
+        if equal(c1, 0):
+            if not equal(c0, 0):
                 return False
         else:
             k.append(c0/c1)
@@ -94,7 +95,7 @@ class Plane:
             return True
 
         for i in range(1, len(k)):
-            if not self.equ(k[i-1], k[i]):
+            if not equal(k[i-1], k[i]):
                 return False
 
         return True
@@ -129,9 +130,3 @@ class Plane:
             print(point.value('X'), point.value('Y'), point.value('Z'))
         print("abcd: ", a, b, c, d)
         print('--------------')
-
-    def equ(self, a, b):
-        if abs(a-b) < PRECISION:
-            return True
-
-        return False

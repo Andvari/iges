@@ -622,13 +622,14 @@ class Solid:
             if self.faces_[i].plane().parallel(plane):
                 for j in range(i+1, len(self.faces_)):
                     if self.faces_[i].orientation() == self.faces_[j].orientation():
-                        if self.faces_[i].cross(self.faces_[j]):
-                            self.faces_[i].print()
-                            self.faces_[j].print()
-                            f = self.faces_[i].merge(self.faces_[j])
-                            to_remove.append(self.faces_[i])
-                            to_remove.append(self.faces_[j])
-                            to_append.append(f)
+                        cross_points = self.faces_[i].cross(self.faces_[j])
+                        if cross_points:
+                            for cross_point in cross_points:
+                                print(cross_point.value())
+                            #f = self.faces_[i].merge(self.faces_[j])
+                            #to_remove.append(self.faces_[i])
+                            #to_remove.append(self.faces_[j])
+                            #to_append.append(f)
 
         for face in to_remove:
             self.remove(face)

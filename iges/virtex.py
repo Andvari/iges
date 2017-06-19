@@ -1,3 +1,5 @@
+from entities import equal
+
 class Virtex:
     def __init__(self, x: float, y: float, z: float):
         self.coordinates = {'X': x, 'Y': y, 'Z': z}
@@ -26,7 +28,9 @@ class Virtex:
         return v
 
     def equ(self, v):
-        if self.value() == v.value():
-            return True
+        if equal(self.value('X'), v.value('X')):
+            if equal(self.value('Y'), v.value('Y')):
+                if equal(self.value('Z'), v.value('Z')):
+                    return True
 
         return False

@@ -151,7 +151,7 @@ class Face:
             y = self.edges_[idx].point(1).value('Y')
             z = self.edges_[idx].point(1).value('Z')
             for c, s in way:
-                if s == ('-'):
+                if s == '-':
                     d = -d
                 self.edges_[(idx + 0) % len(self.edges_)].update(1, c, d)
                 self.edges_[(idx + 1) % len(self.edges_)].update(0, c, d)
@@ -192,9 +192,16 @@ class Face:
         if not self.plane().coincide(face.plane()):
             return {}
 
+        i=1
+        cross_points = []
         for e in self.edges_:
+            j=1
+            print(i,)
             for ee in face.edges():
+                print("  ", j)
+                j += 1
                 if e.cross(ee, face.plane()):
-                    return e.cross(ee, face.plane())
+                    cross_points.append(e.cross(ee, face.plane()))
+            i += 1
 
-        return {}
+        return cross_points
