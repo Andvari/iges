@@ -114,10 +114,6 @@ class Edge:
             a10, b10 = edge.point(0).value('X'), edge.point(0).value('Z')
             a11, b11 = edge.point(1).value('X'), edge.point(1).value('Z')
 
-        print(a00, a01, "   ", b00, b01)
-        print(a10, a11, "   ", b10, b11)
-        print('---')
-
         if equal(a00, a01) and equal(b00, b01):                             # .
             return {}
 
@@ -186,14 +182,26 @@ class Edge:
                             a = (b1-b0)/(k0-k1)
                             b = k0*a + b0
 
+        x1 = a00
+        y1 = b00
+        x2 = a
+        y2 = b
+        x3 = a11
+        y3 = b11
+
+        if ((x2 - x1) * (y3 - y1) - (y2 - y1) * (x3 - x1)) / 2 > 0:
+            s = '+'
+        else:
+            s = '-'
+
         if plane.parallel(Plane('XY')):
-            return Virtex(a, b, self.point(0).value('Z'))
+            return Virtex(a, b, self.point(0).value('Z')), s
 
         if plane.parallel(Plane('YZ')):
-            return Virtex(self.point(0).value('X'), a, b)
+            return Virtex(self.point(0).value('X'), a, b), s
 
         if plane.parallel(Plane('XZ')):
-            return Virtex(a, self.point(0).value('Y'), b)
+            return Virtex(a, self.point(0).value('Y'), b), s
 
         return {}
 

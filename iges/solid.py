@@ -624,8 +624,8 @@ class Solid:
                     if self.faces_[i].orientation() == self.faces_[j].orientation():
                         cross_points = self.faces_[i].cross(self.faces_[j])
                         if cross_points:
-                            for cross_point in cross_points:
-                                print(cross_point.value())
+                            for cross_point, sign in cross_points:
+                                print(cross_point.value(), sign)
                             #f = self.faces_[i].merge(self.faces_[j])
                             #to_remove.append(self.faces_[i])
                             #to_remove.append(self.faces_[j])

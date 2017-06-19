@@ -192,16 +192,15 @@ class Face:
         if not self.plane().coincide(face.plane()):
             return {}
 
-        i=1
         cross_points = []
         for e in self.edges_:
-            j=1
-            print(i,)
             for ee in face.edges():
-                print("  ", j)
-                j += 1
                 if e.cross(ee, face.plane()):
                     cross_points.append(e.cross(ee, face.plane()))
-            i += 1
+                    e.print()
+                    ee.print()
+                    v, s = e.cross(ee, face.plane())
+                    print(v.value(), s, self.orientation())
+                    print("---")
 
         return cross_points
