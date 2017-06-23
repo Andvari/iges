@@ -1,5 +1,5 @@
 from solid import Solid
-from virtex import Virtex
+from vertex import Vertex
 from plane import Plane
 
 

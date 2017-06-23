@@ -1,7 +1,7 @@
-from virtex import Virtex
+from vertex import Vertex
 
 class Direction:
-    def __init__(self, p1: Virtex, p2: Virtex):
+    def __init__(self, p1: Vertex, p2: Vertex):
         self.ways = []
         if p1.x() < p2.x():
             self.ways.append(('X', '+'))

@@ -1,18 +1,14 @@
-from virtex import Virtex
+from vertex import Vertex
 from direction import Direction
 from plane import Plane
 from entities import equal, inside
 
 
 class Edge:
-    def __init__(self, start: Virtex, end: Virtex):
+    def __init__(self, start: Vertex, end: Vertex):
         self.p = []
         self.p.append(start)
         self.p.append(end)
-
-    #def update(self, start: Virtex, end: Virtex):
-        #self.p[0].update(start)
-        #self.p[1].update(end)
 
     def update(self, *args):
         self.p[args[0]].update(args[1], args[2])
@@ -96,7 +92,8 @@ class Edge:
             self.p[0].update(c, bias)
             self.p[1].update(c, bias)
 
-    def cross(self, edge, plane):
+    def intersect(self, edge, plane):
+        empty = Vertex(), ""
 
         if plane.parallel(Plane('XY')):
             a00, b00 = self.point(0).value('X'), self.point(0).value('Y')
@@ -115,47 +112,47 @@ class Edge:
             a11, b11 = edge.point(1).value('X'), edge.point(1).value('Z')
 
         if equal(a00, a01) and equal(b00, b01):                             # .
-            return {}
+            return empty
 
         if equal(a10, a11) and equal(b10, b11):                             #  .
-            return {}
+            return empty
 
         a = 0
         b = 0
 
         if equal(a00, a01):                                                 # |
             if equal(a10, a11):                                             #  |
-                return {}                                                   # ||
+                return empty                                                   # ||
             else:
                 if equal(b10, b11):                                         #  -
                     if inside(a10, a00, a11) and inside(b00, b10, b01):     # |-
                         a, b = a00, b10
                     else:
-                        return {}
+                        return empty
                 else:                                                       #  /
                     k, b = self.kb(a10, b10, a11, b11)
                     y = k*a00 + b
                     if b00 <= y <= b01:                                     # |/
                         a, b = a00, y
                     else:
-                        return {}
+                        return empty
         else:
             if equal(b00, b01):                                             # -
                 if equal(a10, a11):                                         #  |
                     if inside(b10, b00, b11) and inside(a00, a10, a01):     # -|
                         a, b = a10, b00
                     else:
-                        return {}
+                        return empty
                 else:
                     if equal(b10, b11):                                     #  -
-                        return {}                                           # --
+                        return empty                                           # --
                     else:                                                   #  /
                         k, b = self.kb(a10, b10, a11, b11)
                         x = (b00 - b) / k
                         if inside(a00, x, a01):                             # -/
                             a, b = x, b00
                         else:
-                            return {}
+                            return empty
             else:                                                           # /
                 if equal(a10, a11):                                         #  |
                     k, b = self.kb(a00, b00, a01, b01)
@@ -163,7 +160,7 @@ class Edge:
                     if inside(b10, y, b11):                                 # /|
                         a, b = a10, y
                     else:
-                        return {}
+                        return empty
                 else:
                     if equal(b10, b11):                                     #  -
                         k, b = self.kb(a00, b00, a01, b01)                  # /-
@@ -171,13 +168,12 @@ class Edge:
                         if inside(a10, x, a11):
                             a, b = x, b10
                         else:
-                            return {}
+                            return empty
                     else:                                                   #  /
-                        pass                                                # //
-                        k0, b0 = self.kb(a00, b00, a01, b01)
+                        k0, b0 = self.kb(a00, b00, a01, b01)                # //
                         k1, b1 = self.kb(a10, b10, a11, b11)
                         if equal(k0, k1):
-                            return {}
+                            return empty
                         else:
                             a = (b1-b0)/(k0-k1)
                             b = k0*a + b0
@@ -195,15 +191,15 @@ class Edge:
             s = '-'
 
         if plane.parallel(Plane('XY')):
-            return Virtex(a, b, self.point(0).value('Z')), s
+            return Vertex(a, b, self.point(0).value('Z')), s
 
         if plane.parallel(Plane('YZ')):
-            return Virtex(self.point(0).value('X'), a, b), s
+            return Vertex(self.point(0).value('X'), a, b), s
 
         if plane.parallel(Plane('XZ')):
-            return Virtex(a, self.point(0).value('Y'), b), s
+            return Vertex(a, self.point(0).value('Y'), b), s
 
-        return {}
+        return empty
 
     def kb(self, a0, b0, a1, b1):
         return 0, 0

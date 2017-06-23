@@ -1,8 +1,14 @@
 from entities import equal
 
-class Virtex:
-    def __init__(self, x: float, y: float, z: float):
-        self.coordinates = {'X': x, 'Y': y, 'Z': z}
+
+class Vertex:
+    def __init__(self, *args):
+
+        if len(args) == 0:
+            self.coordinates = {}
+            return
+
+        self.coordinates = {'X': args[0], 'Y': args[1], 'Z': args[2]}
 
     def update(self, *args):
 

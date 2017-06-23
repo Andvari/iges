@@ -1,4 +1,4 @@
-from virtex import Virtex
+from vertex import Vertex
 from edge import Edge
 from face import Face
 from direction import Direction
@@ -433,10 +433,10 @@ class Solid:
 
         if entity[etn] == "Line":
             if e['Form Number'] == '0':
-                p1 = Virtex(float(format(float(pd[2]), '.4f')),
+                p1 = Vertex(float(format(float(pd[2]), '.4f')),
                             float(format(float(pd[3]), '.4f')),
                             float(format(float(pd[4]), '.4f')))
-                p2 = Virtex(float(format(float(pd[5]), '.4f')),
+                p2 = Vertex(float(format(float(pd[5]), '.4f')),
                             float(format(float(pd[6]), '.4f')),
                             float(format(float(pd[7]), '.4f')))
                 self.prefix(l + 1)
@@ -622,10 +622,13 @@ class Solid:
             if self.faces_[i].plane().parallel(plane):
                 for j in range(i+1, len(self.faces_)):
                     if self.faces_[i].orientation() == self.faces_[j].orientation():
-                        cross_points = self.faces_[i].cross(self.faces_[j])
-                        if cross_points:
-                            for cross_point, sign in cross_points:
-                                print(cross_point.value(), sign)
+                        v1, v2, chain = self.faces_[i].intersect(self.faces_[j])
+                        if chain:
+                            print(v1.value())
+                            print(v2.value())
+                            for e in chain:
+                                for ee in e:
+                                    ee.print()
                             #f = self.faces_[i].merge(self.faces_[j])
                             #to_remove.append(self.faces_[i])
                             #to_remove.append(self.faces_[j])

@@ -1,4 +1,4 @@
-from virtex import Virtex
+from vertex import Vertex
 from entities import *
 
 
@@ -7,21 +7,21 @@ class Plane:
         self.p = []
 
         if args[0] == 'XY':
-            self.p.append(Virtex(0, 0, 0))
-            self.p.append(Virtex(1, 0, 0))
-            self.p.append(Virtex(0, 1, 0))
+            self.p.append(Vertex(0, 0, 0))
+            self.p.append(Vertex(1, 0, 0))
+            self.p.append(Vertex(0, 1, 0))
             return
 
         if args[0] == 'YZ':
-            self.p.append(Virtex(0, 0, 0))
-            self.p.append(Virtex(0, 1, 0))
-            self.p.append(Virtex(0, 0, 1))
+            self.p.append(Vertex(0, 0, 0))
+            self.p.append(Vertex(0, 1, 0))
+            self.p.append(Vertex(0, 0, 1))
             return
 
         if args[0] == 'XZ':
-            self.p.append(Virtex(0, 0, 0))
-            self.p.append(Virtex(1, 0, 0))
-            self.p.append(Virtex(0, 0, 1))
+            self.p.append(Vertex(0, 0, 0))
+            self.p.append(Vertex(1, 0, 0))
+            self.p.append(Vertex(0, 0, 1))
             return
 
         if len(args[0]) == 3:
