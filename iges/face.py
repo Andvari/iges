@@ -6,6 +6,7 @@ from vertex import Vertex
 from direction import Direction
 from plane import Plane
 
+
 class Face:
     def __init__(self, *args):
         self.i = 0
@@ -190,7 +191,7 @@ class Face:
 
     def intersect(self, face):
         if not self.plane().coincide(face.plane()):
-            return Vertex(), Vertex(), []
+            return []
 
         if self.orientation() == ORIENTATION_CW:
             sign_in = '-'
@@ -206,21 +207,22 @@ class Face:
         v_in = Vertex()
         v_out = Vertex()
         chain = []
+        chains = []
         for i in range(m):
             for j in range(mm):
                 v_in, s = self.edges_[i].intersect(face.edges_[j], face.plane())
-                if s == sign_in:
-                    t = []
+                if s == sign_out:
+                    chain = []
                     exit_flag = False
                     for k in range(mm):
-                        t.append(face.edges_[(j + k) % mm])
+                        chain.append(face.edges_[(j + k) % mm])
                         for l in range(m):
                             v_out, s = self.edges_[(i+l) % m].intersect(face.edges_[(j+k) % mm], face.plane())
-                            if s == sign_out:
-                                chain.append(t)
+                            if s == sign_in:
+                                if chain:
+                                    chains.append((v_in, v_out, chain))
                                 exit_flag = True
                                 break
                         if exit_flag:
                             break
-
-        return v_in, v_out, chain
+        return chains

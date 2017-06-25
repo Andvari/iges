@@ -3,15 +3,16 @@ from vertex import Vertex
 from plane import Plane
 
 
-filename = 'pyram.IGS'
+filename = 'cube.IGS'
 
 solid = Solid(filename, 0)
 solid_ = Solid(filename, 0)
 
-#print("Object:")
-#for face in solid_:
-#    face.image(Plane('XY')).print()
-#    print()
+print("Object:")
+for face in solid_:
+    for e in face:
+        e.print()
+    print('--')
 
 solid = Solid(filename, 0)
 
@@ -31,12 +32,9 @@ print('--------------+')
 #print(top_faces)
 #print(side_faces)
 
-
-print('-+-=')
 solid_.optimize(Plane('XY'))
-'''
+
 print("Object:")
 for face in solid_:
     face.image(Plane('XY')).print()
     print()
-'''

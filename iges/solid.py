@@ -3,6 +3,7 @@ from edge import Edge
 from face import Face
 from direction import Direction
 from entities import *
+from plane import Plane
 
 import os
 import sys
@@ -622,17 +623,26 @@ class Solid:
             if self.faces_[i].plane().parallel(plane):
                 for j in range(i+1, len(self.faces_)):
                     if self.faces_[i].orientation() == self.faces_[j].orientation():
-                        v1, v2, chain = self.faces_[i].intersect(self.faces_[j])
-                        if chain:
-                            print(v1.value())
-                            print(v2.value())
-                            for e in chain:
-                                for ee in e:
-                                    ee.print()
-                            #f = self.faces_[i].merge(self.faces_[j])
-                            #to_remove.append(self.faces_[i])
-                            #to_remove.append(self.faces_[j])
-                            #to_append.append(f)
+                        f = Face()
+                        for v1, v2, chain in self.faces_[i].intersect(self.faces_[j]):
+                            for k in range(len(chain)):
+                                if k == 0:
+                                    chain[k].update(0, v1)
+                                if k == len(chain)-1:
+                                    chain[k].update(1, v2)
+                                f.append(chain[k])
+                        for v1, v2, chain in self.faces_[j].intersect(self.faces_[i]):
+                            for k in range(len(chain)):
+                                if k == 0:
+                                    chain[k].update(0, v1)
+                                if k == len(chain)-1:
+                                    chain[k].update(1, v2)
+                                f.append(chain[k])
+
+                        if f.size():
+                            to_remove.append(self.faces_[i])
+                            to_remove.append(self.faces_[j])
+                            to_append.append(f)
 
         for face in to_remove:
             self.remove(face)

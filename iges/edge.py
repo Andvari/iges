@@ -11,6 +11,10 @@ class Edge:
         self.p.append(end)
 
     def update(self, *args):
+        if len(args) == 2:
+            self.p[args[0]].update(args[1])
+            return
+
         self.p[args[0]].update(args[1], args[2])
 
     def points(self):
@@ -36,7 +40,8 @@ class Edge:
         return way
 
     def print(self):
-        print(self.p[0].value(), self.p[1].value())
+        print(self.p[0].value('X'), self.p[0].value('Y'), self.p[0].value('Z'), "   ", end="")
+        print(self.p[1].value('X'), self.p[1].value('Y'), self.p[1].value('Z'))
 
     def image(self, p: Plane):
         x0 = 0
