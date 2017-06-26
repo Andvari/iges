@@ -1,7 +1,41 @@
 from solid import Solid
 from vertex import Vertex
 from plane import Plane
+import math
 
+
+v1 = Vertex(1, 0, 0)
+v2 = Vertex(0, 1, 0)
+v3 = Vertex(0, 0, 1)
+p1 = Plane([v1, v2, v3])
+#a, b, c, d = p1.abcd()
+#print(a, b, c, d)
+
+#p1 = Plane('YZ')
+p2 = Plane('XY')
+
+a, b, c, d = p1.abcd()
+print(a, b, c, d)
+a, b, c, d = p2.abcd()
+print(a, b, c, d)
+
+n, v = p1.intersect(p2)
+
+if n:
+    print(n.value())
+else:
+    print("n is None")
+if v:
+    print(v.value())
+else:
+    print("v is None")
+
+g = p1.angle(p2)
+print(g)
+
+
+while True:
+    pass
 
 filename = 'cube.IGS'
 

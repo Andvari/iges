@@ -1,5 +1,6 @@
 from vertex import Vertex
 from entities import *
+import math
 
 
 class Plane:
@@ -120,7 +121,7 @@ class Plane:
         a = k1
         b = -k2
         c = k3
-        d = -k1*x0 + k2*y0 - k3*z2
+        d = -k1*x0 + k2*y0 - k3*z0
 
         return a, b, c, d
 
@@ -130,3 +131,41 @@ class Plane:
             print(point.value('X'), point.value('Y'), point.value('Z'))
         print("abcd: ", a, b, c, d)
         print('--------------')
+
+    def intersect(self, p):
+
+        a1, b1, c1, d1 = self.abcd()
+        a2, b2, c2, d2 = p.abcd()
+
+        v = Vertex(b1 * c2 - b2 * c1, -(a1 * c2 - a2 * c1), a1 * b2 - a2 * b1)
+        det = a1*b2 - a2*b1
+        if det:
+            n = Vertex((d2*b1 - d1*b2)/det, -(d2*a1 - d1*a2)/det, 0)
+        else:
+            det = a1*c2 - a2*c1
+            if det:
+                n = Vertex((d2 * c1 - d1 * c2) / det, -(d2 * a1 - d1 * a2) / det, 0)
+            else:
+                det = b1*c2 - b2*c1
+                if det:
+                    n = Vertex((d2 * c1 - d1 * c2) / det, -(d2 * b1 - d1 * b2) / det, 0)
+                else:
+                    return None, None
+
+        return n, v
+
+    def angle(self, p):
+
+        a1, b1, c1, d1 = self.abcd()
+        a2, b2, c2, d2 = p.abcd()
+
+        #g = math.acos((a1*a2+b1*b2+c1*c2)/(math.sqrt(a1*a1 + b1*b1 + c1*c1) * math.sqrt(a2*a2 + b2*b2 + c2*c2)))
+        #return 180.*g/math.pi
+
+        ps = a1*b2 - a2*b1 + b1*c2 - b1*c2 + c1*a2 - c2*a1
+        s = a1*a2 + b1*b2 + c1*c2
+
+        print(ps)
+        print(s)
+
+        return ps/s
