@@ -154,18 +154,61 @@ class Plane:
 
         return n, v
 
-    def angle(self, p):
+    def angle(self, p1: Vertex, p2: Vertex):
 
-        a1, b1, c1, d1 = self.abcd()
-        a2, b2, c2, d2 = p.abcd()
+        a, b, c, d = self.abcd()
 
-        #g = math.acos((a1*a2+b1*b2+c1*c2)/(math.sqrt(a1*a1 + b1*b1 + c1*c1) * math.sqrt(a2*a2 + b2*b2 + c2*c2)))
-        #return 180.*g/math.pi
+        x0 = a + p1.value('X')
+        y0 = b + p1.value('Y')
+        z0 = c + p1.value('Z')
 
-        ps = a1*b2 - a2*b1 + b1*c2 - b1*c2 + c1*a2 - c2*a1
-        s = a1*a2 + b1*b2 + c1*c2
+        x1 = p2.value('X')
+        y1 = p2.value('Y')
+        z1 = p2.value('Z')
 
-        print(ps)
-        print(s)
+        dx = x1 - x0
+        dy = y1 - y0
+        dz = z1 - z0
+        if not dx and not dy and not dz:
+            y = (a*y0*dx/dy - a*x0 + c*y0*dz/dy - c*z0)/(a*dx/dy + b + c*dz/dy)
+            x = (y-y0)*dx/dy + x0
+            z = (y-y0)*dz/dy + z0
 
-        return ps/s
+        if dx and not dy and not dz:
+            x = x0
+            z = (-a*x0 + z0*b*dy/dz - b*y0)/(b*dy/dz + c)
+            y = (z-z0)*dy/dz + y0
+
+        if not dx and dy and not dz:
+            y = y0
+            z = (z0*a*dz/dz - a*x0 - b*y0)/(a*dx/dz + c)
+            x = (z-z0)*dx/dz + x0
+
+        if not dx and not dy and dz:
+            z = z0
+            y = (y0*a*dx/dy - a*x0 - c*z0)/(a*dx/dy + b)
+            x = (y-y0)*dx/dy + x0
+
+        if dx and dy and not dz:
+            x = x0
+            y = y0
+            z = -(a*x0 + b*y0)/c
+
+        if dx and not dy and dz:
+            x = x0
+            z = z0
+            y = -(a * x0 + c * z0) / b
+
+        if not dx and dy and dz:
+            y = y0
+            z = z0
+            x = -(b * y0 + c * z0) / a
+
+        if dx and dy and dz:
+            x = x0
+            y = y0
+            z = z0
+
+
+        print(x, y, z)
+
