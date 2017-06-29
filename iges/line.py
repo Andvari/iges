@@ -1,5 +1,6 @@
 from vertex import Vertex
 
+
 class Line:
     def __init__(self, *args):
 
@@ -97,17 +98,70 @@ class Line:
         zf = zs + l.point()['Z']
 
         if dx and dy and dz:
-            if (xs - x0)/dx == (ys - y0)/dy and (ys - y0)/dy == (zs - z0)/dz:
-                return True
-            else:
+            if not (xs - x0)/dx == (ys - y0)/dy or not (ys - y0)/dy == (zs - z0)/dz:
                 return False
 
         if not dx and dy and dz:
-            if (ys-)/ == ()/:
-                return True
-            else:
+            if not xs == x0 or not (ys - y0)/dy == (zs-z0)/dz:
                 return False
 
+        if dx and not dy and dz:
+            if not ys == y0 or not (xs - x0)/dx == (zs-z0)/dz:
+                return False
+
+        if dx and dy and not dz:
+            if not zs == z0 or not (xs - x0)/dx == (ys-y0)/dy:
+                return False
+
+        if not dx and dy and dz:
+            if not xs == x0 or not (ys - y0)/dy == (zs-z0)/dz:
+                return False
+
+        if not dx and not dy and dz:
+            if not xs == x0 or not ys == y0:
+                return False
+
+        if not dx and dy and not dz:
+            if not xs == x0 or not zs == z0:
+                return False
+
+        if dx and not dy and not dz:
+            if not ys == y0 or not zs == z0:
+                return False
+
+        if dx and dy and dz:
+            if not (xf - x0)/dx == (yf - y0)/dy or not (yf - y0)/dy == (zf - z0)/dz:
+                return False
+
+        if not dx and dy and dz:
+            if not xf == x0 or not (yf - y0)/dy == (zf-z0)/dz:
+                return False
+
+        if dx and not dy and dz:
+            if not yf == y0 or not (xf - x0)/dx == (zf-z0)/dz:
+                return False
+
+        if dx and dy and not dz:
+            if not zf == z0 or not (xf - x0)/dx == (yf-y0)/dy:
+                return False
+
+        if not dx and dy and dz:
+            if not xf == x0 or not (yf - y0)/dy == (zf-z0)/dz:
+                return False
+
+        if not dx and not dy and dz:
+            if not xf == x0 or not yf == y0:
+                return False
+
+        if not dx and dy and not dz:
+            if not xf == x0 or not zf == z0:
+                return False
+
+        if dx and not dy and not dz:
+            if not yf == y0 or not zf == z0:
+                return False
+
+        return True
 
     def print(self):
         print("Line: ", end="")
