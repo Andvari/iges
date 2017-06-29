@@ -1,33 +1,33 @@
 from vertex import Vertex
 from entities import *
 import math
-
+from line import Line
 
 class Plane:
     def __init__(self, *args):
-        self.p = []
+        self.__p = []
 
         if args[0] == 'XY':
-            self.p.append(Vertex(0, 0, 0))
-            self.p.append(Vertex(1, 0, 0))
-            self.p.append(Vertex(0, 1, 0))
+            self.__p.append(Vertex(0, 0, 0))
+            self.__p.append(Vertex(1, 0, 0))
+            self.__p.append(Vertex(0, 1, 0))
             return
 
         if args[0] == 'YZ':
-            self.p.append(Vertex(0, 0, 0))
-            self.p.append(Vertex(0, 1, 0))
-            self.p.append(Vertex(0, 0, 1))
+            self.__p.append(Vertex(0, 0, 0))
+            self.__p.append(Vertex(0, 1, 0))
+            self.__p.append(Vertex(0, 0, 1))
             return
 
         if args[0] == 'XZ':
-            self.p.append(Vertex(0, 0, 0))
-            self.p.append(Vertex(1, 0, 0))
-            self.p.append(Vertex(0, 0, 1))
+            self.__p.append(Vertex(0, 0, 0))
+            self.__p.append(Vertex(1, 0, 0))
+            self.__p.append(Vertex(0, 0, 1))
             return
 
         if len(args[0]) == 3:
             for v in args[0]:
-                self.p.append(v)
+                self.__p.append(v)
 
         return
 
@@ -102,17 +102,17 @@ class Plane:
         return True
 
     def abcd(self):
-        x0 = self.p[0].value('X')
-        x1 = self.p[1].value('X')
-        x2 = self.p[2].value('X')
+        x0 = self.__p[0].value('X')
+        x1 = self.__p[1].value('X')
+        x2 = self.__p[2].value('X')
 
-        y0 = self.p[0].value('Y')
-        y1 = self.p[1].value('Y')
-        y2 = self.p[2].value('Y')
+        y0 = self.__p[0].value('Y')
+        y1 = self.__p[1].value('Y')
+        y2 = self.__p[2].value('Y')
 
-        z0 = self.p[0].value('Z')
-        z1 = self.p[1].value('Z')
-        z2 = self.p[2].value('Z')
+        z0 = self.__p[0].value('Z')
+        z1 = self.__p[1].value('Z')
+        z2 = self.__p[2].value('Z')
 
         k1 = (z2 - z0) * (y1 - y0) - (z1 - z0) * (y2 - y0)
         k2 = (z2 - z0) * (x1 - x0) - (z1 - z0) * (x2 - x0)
@@ -123,11 +123,11 @@ class Plane:
         c = k3
         d = -k1*x0 + k2*y0 - k3*z0
 
-        return a, b, c, d
+        return -a, -b, -c, -d       # to the meat
 
     def print(self):
         a, b, c, d = self.abcd()
-        for point in self.p:
+        for point in self.__p:
             print(point.value('X'), point.value('Y'), point.value('Z'))
         print("abcd: ", a, b, c, d)
         print('--------------')
@@ -150,65 +150,86 @@ class Plane:
                 if det:
                     n = Vertex((d2 * c1 - d1 * c2) / det, -(d2 * b1 - d1 * b2) / det, 0)
                 else:
-                    return None, None
+                    print("Planes is parallel")
+                    return None
 
-        return n, v
+        return Line(n, v)
 
-    def angle(self, p1: Vertex, p2: Vertex):
+    def angle(self, l: Line, p2: Vertex):
 
         a, b, c, d = self.abcd()
 
-        x0 = a + p1.value('X')
-        y0 = b + p1.value('Y')
-        z0 = c + p1.value('Z')
+        x0 = a + l.point().value('X')
+        y0 = b + l.point().value('Y')
+        z0 = c + l.point().value('Z')
+
+        #print("x0,y0,z0: ", x0, y0, z0)
 
         x1 = p2.value('X')
         y1 = p2.value('Y')
         z1 = p2.value('Z')
 
+        #print("x1,y1,z1: ", x1, y1, z1)
+
         dx = x1 - x0
         dy = y1 - y0
         dz = z1 - z0
-        if not dx and not dy and not dz:
-            y = (a*y0*dx/dy - a*x0 + c*y0*dz/dy - c*z0)/(a*dx/dy + b + c*dz/dy)
+
+        #print("dx,dy,dz: ", dx, dy, dz)
+        #print("a,b,c: ", a, b, c)
+
+        if dx*a + dy*b + dz*c == 0:
+            return('Concave')
+
+        if dx and dy and dz:
+            y = (a*y0*dx/dy - a*x0 + c*y0*dz/dy - c*z0 - d)/(a*dx/dy + b + c*dz/dy)
             x = (y-y0)*dx/dy + x0
             z = (y-y0)*dz/dy + z0
 
-        if dx and not dy and not dz:
+        if not dx and dy and dz:
             x = x0
-            z = (-a*x0 + z0*b*dy/dz - b*y0)/(b*dy/dz + c)
+            z = (-a*x0 + z0*b*dy/dz - b*y0 - d)/(b*dy/dz + c)
             y = (z-z0)*dy/dz + y0
 
-        if not dx and dy and not dz:
+        if dx and not dy and dz:
             y = y0
-            z = (z0*a*dz/dz - a*x0 - b*y0)/(a*dx/dz + c)
+            z = (z0*a*dz/dz - a*x0 - b*y0 - d)/(a*dx/dz + c)
             x = (z-z0)*dx/dz + x0
 
-        if not dx and not dy and dz:
+        if dx and dy and not dz:
             z = z0
-            y = (y0*a*dx/dy - a*x0 - c*z0)/(a*dx/dy + b)
+            y = (y0*a*dx/dy - a*x0 - c*z0 - d)/(a*dx/dy + b)
             x = (y-y0)*dx/dy + x0
 
-        if dx and dy and not dz:
+        if not dx and not dy and dz:
             x = x0
             y = y0
-            z = -(a*x0 + b*y0)/c
+            z = -(a*x0 + b*y0 + d)/c
 
-        if dx and not dy and dz:
+        if not dx and dy and not dz:
             x = x0
             z = z0
-            y = -(a * x0 + c * z0) / b
+            y = -(a * x0 + c * z0 + d) / b
 
-        if not dx and dy and dz:
+        if dx and not dy and not dz:
             y = y0
             z = z0
-            x = -(b * y0 + c * z0) / a
+            x = -(b * y0 + c * z0 + d) / a
 
-        if dx and dy and dz:
+        if not dx and not dy and not dz:
             x = x0
             y = y0
             z = z0
 
+        l1 = math.sqrt((x1 - x0) * (x1 - x0) + (y1 - y0) * (y1 - y0) + (z1 - z0) * (z1 - z0))
+        l2 = math.sqrt((x - x0) * (x - x0) + (y - y0) * (y - y0) + (z - z0) * (z - z0))
 
-        print(x, y, z)
+        #print("x,y,z: ", x, y, z)
+        #print("l1,l2: ", l1, l2)
 
+        if l1 > l2:
+            return('Concave')
+        else:
+            return('Convex')
+
+        return

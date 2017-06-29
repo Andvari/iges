@@ -5,31 +5,31 @@ class Vertex:
     def __init__(self, *args):
 
         if len(args) == 0:
-            self.coordinates = {}
+            self.__coordinates = {}
             return
 
-        self.coordinates = {'X': args[0], 'Y': args[1], 'Z': args[2]}
+        self.__coordinates = {'X': args[0], 'Y': args[1], 'Z': args[2]}
 
     def update(self, *args):
 
         if len(args) == 1:
-            self.coordinates['X'] = args[0].value('X')
-            self.coordinates['Y'] = args[0].value('Y')
-            self.coordinates['Z'] = args[0].value('Z')
+            self.__coordinates['X'] = args[0].value('X')
+            self.__coordinates['Y'] = args[0].value('Y')
+            self.__coordinates['Z'] = args[0].value('Z')
             return
 
-        self.coordinates[args[0]] += args[1]
+        self.__coordinates[args[0]] += args[1]
 
     def value(self, *args):
         if len(args) == 0:
-            return self.coordinates
+            return self.__coordinates
 
         if len(args) == 1:
-            return self.coordinates[args[0]]
+            return self.__coordinates[args[0]]
 
         v = []
         for a in args:
-            v.append(self.coordinates[a])
+            v.append(self.__coordinates[a])
 
         return v
 
@@ -40,3 +40,6 @@ class Vertex:
                     return True
 
         return False
+
+    def print(self):
+        print(self.__coordinates['X'], self.__coordinates['Y'], self.__coordinates['Z'])

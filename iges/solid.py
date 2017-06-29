@@ -70,7 +70,7 @@ class Solid:
 
         # print(pd_sec)
 
-        self.faces_ = self.solid_detect(de_sec, pd_sec)
+        self.__faces = self.solid_detect(de_sec, pd_sec)
 
         if log == 0:
             sys.stdout = save_stdout
@@ -131,15 +131,15 @@ class Solid:
         self.i = 0
 
     def size(self):
-        return len(self.faces)
+        return len(self.faces())
 
     def __iter__(self):
         return self
 
     def __next__(self):
-        if self.i < len(self.faces_):
+        if self.i < len(self.__faces):
             self.i += 1
-            return self.faces_[self.i-1]
+            return self.__faces[self.i-1]
 
         else:
             self.i = 0
@@ -570,7 +570,7 @@ class Solid:
         return s
 
     def ff(self, face: Face, edge: Edge):
-        for f in self.faces_:
+        for f in self.__faces:
             for e in f:
                 if e.equ(edge):
                     if f.equ(face):
@@ -581,18 +581,22 @@ class Solid:
         return Face()
 
     def expand(self, face: Face, edge: Edge, way: Direction, d: int):
-        for f in self.faces_:
+        for f in self.__faces:
             if f.equ(face):
                 f.expand(edge, way, d)
                 break
 
-    def faces(self):
-        return self.faces_
+    def faces(self, *args):
+
+        if len(args) == 0:
+            return self.__faces
+        else:
+            return self.__faces[args[0]]
 
     def coincide_faces(self, planes):
         f = []
         for plane in planes:
-            for face in self.faces_:
+            for face in self.__faces:
                 if face.plane().coincide(plane):
                     f.append(face)
         return f
@@ -600,38 +604,38 @@ class Solid:
     def parallel_faces(self, planes):
         f = []
         for plane in planes:
-            for face in self.faces_:
+            for face in self.__faces:
                 if face.plane().parallel(plane):
                     f.append(face)
         return f
 
     def remove(self, face):
         updated = []
-        for i in range(len(self.faces_)):
-            if not self.faces_[i].equ(face):
-                updated.append(self.faces_[i])
-        self.faces_ = updated
+        for i in range(len(self.__faces)):
+            if not self.__faces[i].equ(face):
+                updated.append(self.__faces[i])
+        self.__faces = updated
 
     def replace(self, face_out, face_in):
         self.delete(face_out)
-        self.faces_.append(face_in)
+        self.__faces.append(face_in)
 
     def optimize(self, plane):
         to_remove = []
         to_append = []
-        for i in range(len(self.faces_)):
-            if self.faces_[i].plane().parallel(plane):
-                for j in range(i+1, len(self.faces_)):
-                    if self.faces_[i].orientation() == self.faces_[j].orientation():
+        for i in range(len(self.__faces)):
+            if self.__faces[i].plane().parallel(plane):
+                for j in range(i+1, len(self.__faces)):
+                    if self.__faces[i].orientation() == self.__faces[j].orientation():
                         f = Face()
-                        for v1, v2, chain in self.faces_[i].intersect(self.faces_[j]):
+                        for v1, v2, chain in self.__faces[i].intersect(self.__faces[j]):
                             for k in range(len(chain)):
                                 if k == 0:
                                     chain[k].update(0, v1)
                                 if k == len(chain)-1:
                                     chain[k].update(1, v2)
                                 f.append(chain[k])
-                        for v1, v2, chain in self.faces_[j].intersect(self.faces_[i]):
+                        for v1, v2, chain in self.__faces[j].intersect(self.__faces[i]):
                             for k in range(len(chain)):
                                 if k == 0:
                                     chain[k].update(0, v1)
@@ -640,14 +644,14 @@ class Solid:
                                 f.append(chain[k])
 
                         if f.size():
-                            to_remove.append(self.faces_[i])
-                            to_remove.append(self.faces_[j])
+                            to_remove.append(self.__faces[i])
+                            to_remove.append(self.__faces[j])
                             to_append.append(f)
 
         for face in to_remove:
             self.remove(face)
 
         for face in to_append:
-            self.faces_.append(face)
+            self.__faces.append(face)
 
 
