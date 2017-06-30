@@ -81,21 +81,21 @@ class Line:
 
     def coincide(self, l):
 
-        x0 = self.__n['X']
-        y0 = self.__n['Y']
-        z0 = self.__n['Z']
+        x0 = self.__n.value('X')
+        y0 = self.__n.value('Y')
+        z0 = self.__n.value('Z')
 
-        dx = self.__v['X']
-        dy = self.__v['Y']
-        dz = self.__v['Z']
+        dx = self.__v.value('X')
+        dy = self.__v.value('Y')
+        dz = self.__v.value('Z')
 
-        xs = l.point()['X']
-        ys = l.point()['Y']
-        zs = l.point()['Z']
+        xs = l.point().value('X')
+        ys = l.point().value('Y')
+        zs = l.point().value('Z')
 
-        xf = xs + l.point()['X']
-        yf = ys + l.point()['Y']
-        zf = zs + l.point()['Z']
+        xf = xs + l.point().value('X')
+        yf = ys + l.point().value('Y')
+        zf = zs + l.point().value('Z')
 
         if dx and dy and dz:
             if not (xs - x0)/dx == (ys - y0)/dy or not (ys - y0)/dy == (zs - z0)/dz:
@@ -164,10 +164,11 @@ class Line:
         return True
 
     def print(self):
-        print("Line: ", end="")
+        print("{ ", end="")
         self.__n.print()
+        print(" }, { ", end="")
         self.__v.print()
-        print("---")
+        print(" }")
 
 
 

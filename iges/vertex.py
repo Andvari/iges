@@ -1,4 +1,5 @@
 from entities import equal
+import math
 
 
 class Vertex:
@@ -42,4 +43,30 @@ class Vertex:
         return False
 
     def print(self):
-        print(self.__coordinates['X'], self.__coordinates['Y'], self.__coordinates['Z'])
+        print(self.__coordinates['X'], self.__coordinates['Y'], self.__coordinates['Z'], end="")
+
+    def distance(self, v):
+        x0 = self.value('X')
+        y0 = self.value('Y')
+        z0 = self.value('Z')
+
+        x1 = v.value('X')
+        y1 = v.value('Y')
+        z1 = v.value('Z')
+
+        return math.sqrt((x1-x0)*(x1-x0)+(y1-y0)*(y1-y0)+(z1-z0)*(z1-z0))
+
+    def vect_mult(self, p):
+        x0 = self.__coordinates['X']
+        y0 = self.__coordinates['Y']
+        z0 = self.__coordinates['Z']
+
+        x1 = p.value('X')
+        y1 = p.value('Y')
+        z1 = p.value('Z')
+
+        x = y0 * z1 - y1 * z0
+        y = -x0 * z1 + x1 * z0
+        z = x0 * y1 - x1 * y0
+
+        return Vertex(x, y, z)

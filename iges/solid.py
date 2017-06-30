@@ -7,6 +7,7 @@ from plane import Plane
 
 import os
 import sys
+from line import Line
 
 
 class Solid:
@@ -586,12 +587,11 @@ class Solid:
                 f.expand(edge, way, d)
                 break
 
-    def faces(self, *args):
+    def faces(self):
+        return self.__faces
 
-        if len(args) == 0:
-            return self.__faces
-        else:
-            return self.__faces[args[0]]
+    def face(self, n):
+        return self.__faces[n]
 
     def coincide_faces(self, planes):
         f = []
@@ -653,5 +653,52 @@ class Solid:
 
         for face in to_append:
             self.__faces.append(face)
+
+    def print(self, *args):
+
+        if len(args) == 0:
+            for i in range(self.size()):
+                print(i)
+                self.face(i).print()
+                print("------")
+            return
+
+        self.__faces[args[0]].print()
+
+    def search_meat(self, f):
+
+        ip = f.inside_point()
+        a, b, c, d = f.plane().abcd()
+        l = Line(ip, Vertex(a, b, c))
+
+        p = []
+        for face in self.__faces:
+            if face.intersect_point(l):
+                p.append(face.intersect_point(l))
+
+        return
+
+    def run(self):
+        e1 = []
+        e2 = []
+        for i in range(self.size()):
+            for j in range(i+1, self.size()):
+                print(i, j)
+                self.face(i).print()
+                print('-')
+                self.face(j).print()
+                print('--')
+                a = self.face(i).hull(self.face(j))
+                print(a)
+                print('---')
+                if a == 'Concave':
+                    l = self.face(i).intersect_line(self.face(j))
+                    l.print()
+                    print('----')
+                    e1 = self.face(i).coincide_edges(l)
+                    e2 = self.face(j).coincide_edges(l)
+                    print(e1)
+                    print(e2)
+                    print('-----')
 
 

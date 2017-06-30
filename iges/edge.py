@@ -2,6 +2,7 @@ from vertex import Vertex
 from direction import Direction
 from plane import Plane
 from entities import equal, inside
+from line import Line
 
 
 class Edge:
@@ -40,8 +41,11 @@ class Edge:
         return way
 
     def print(self):
-        print(self.__p[0].value('X'), self.__p[0].value('Y'), self.__p[0].value('Z'), "   ", end="")
-        print(self.__p[1].value('X'), self.__p[1].value('Y'), self.__p[1].value('Z'))
+        print("{ ", end="")
+        self.__p[0].print()
+        print(" }, { ", end="")
+        self.__p[1].print()
+        print(" }")
 
     def image(self, p: Plane):
         x0 = 0
@@ -207,5 +211,29 @@ class Edge:
         return empty
 
     def kb(self, a0, b0, a1, b1):
-        return 0, 0
+        return
+
+    def line(self):
+        x0 = self.__p[0].value('X')
+        y0 = self.__p[0].value('Y')
+        z0 = self.__p[0].value('Z')
+
+        x1 = self.__p[1].value('X')
+        y1 = self.__p[1].value('Y')
+        z1 = self.__p[1].value('Z')
+
+        n = Vertex(x0, y0, z0)
+        v = Vertex(x1-x0, y1-y0, z1-z0)
+        return Line(n, v)
+
+    def middle(self):
+        x0 = self.__p[0].value('X')
+        y0 = self.__p[0].value('Y')
+        z0 = self.__p[0].value('Z')
+
+        x1 = self.__p[1].value('X')
+        y1 = self.__p[1].value('Y')
+        z1 = self.__p[1].value('Z')
+
+        return Vertex((x0 + x1)/2, (y0 + y1)/2, (z0 + z1)/2)
 

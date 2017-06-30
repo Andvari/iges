@@ -112,10 +112,13 @@ class Face:
         for e in self.__edges:
             e.reverse()
 
-    def print(self):
-        for e in self.__edges:
-            e.print()
-        print('---------')
+    def print(self, *args):
+
+        if len(args) == 0:
+            for e in self.__edges:
+                e.print()
+            return
+        self.__edges[args[0]].print()
 
     def image(self, p):
         img = []
@@ -239,8 +242,74 @@ class Face:
 
     def hull(self, f):
         p1 = self.plane()
+        p1.print()
         p2 = f.plane()
+        p2.print()
         l = p1.intersect(p2)
         if l:
+            l.print()
             p = f.point_out_of_line(l)
-            a = p1.angle(l, p)
+            return p1.angle(l, p)
+        return "Planes is parallel"
+
+    def intersect_line(self, f):
+        return self.plane().intersect(f.plane())
+
+    def coincide_edges(self, l: Line):
+        edges = []
+        for e in self.__edges:
+            if e.line().coincide(l):
+                edges.append(e)
+        return edges
+
+    def inside_point(self):
+
+        e = self.__edges[0]
+        m = e.middle()
+        l = Line(m, e.line().vector().vect_mult(self.plane().vector()))
+
+        ip = []
+        for e in self.__edges:
+            if not e.line().coincide(l):
+                p = e.line().intersect(l)
+                p0 = e.point(0)
+                p1 = e.point(1)
+
+                d0 = p.distance(p0)
+                d1 = p.distance(p1)
+                d01 = p0.distance(p1)
+
+                if d01 >= d0 and d01 >= d1:
+                    ip.append(p)
+
+                if ip:
+                    xmin = 1e9
+                    t1 = Vertex()
+                    for p in ip:
+                        if xmin >= p.value('X'):
+                            xmin = p.value('X')
+                            t1 = p
+                    ip.remove(t1)
+
+                    xmin = 1e9
+                    t2 = Vertex()
+                    for p in ip:
+                        if xmin >= p.value('X'):
+                            xmin = p.value('X')
+                            t2 = p
+
+                    x0 = t1.value('X')
+                    y0 = t1.value('Y')
+                    z0 = t1.value('Z')
+
+                    x1 = t2.value('X')
+                    y1 = t2.value('Y')
+                    z1 = t2.value('Z')
+
+                    return Vertex((x0+x1)/2, (y0+y1)/2, (z0+z1)/2)
+
+        return None
+
+    def is_inside_point(self, p: Vertex):
+        pass
+

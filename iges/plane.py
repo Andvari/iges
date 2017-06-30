@@ -150,7 +150,6 @@ class Plane:
                 if det:
                     n = Vertex((d2 * c1 - d1 * c2) / det, -(d2 * b1 - d1 * b2) / det, 0)
                 else:
-                    print("Planes is parallel")
                     return None
 
         return Line(n, v)
@@ -233,3 +232,29 @@ class Plane:
             return('Convex')
 
         return
+
+    def vector(self):
+        a, b, c, d = self.abcd()
+        return Vertex(a, b, c)
+
+    def intersect_point(self, l: Line):
+
+        a1, b1, c1, d1 = self.abcd()
+        a2, b2, c2, d2 = p.abcd()
+
+        v = Vertex(b1 * c2 - b2 * c1, -(a1 * c2 - a2 * c1), a1 * b2 - a2 * b1)
+        det = a1*b2 - a2*b1
+        if det:
+            n = Vertex((d2*b1 - d1*b2)/det, -(d2*a1 - d1*a2)/det, 0)
+        else:
+            det = a1*c2 - a2*c1
+            if det:
+                n = Vertex((d2 * c1 - d1 * c2) / det, -(d2 * a1 - d1 * a2) / det, 0)
+            else:
+                det = b1*c2 - b2*c1
+                if det:
+                    n = Vertex((d2 * c1 - d1 * c2) / det, -(d2 * b1 - d1 * b2) / det, 0)
+                else:
+                    return None
+
+        return Line(n, v)
