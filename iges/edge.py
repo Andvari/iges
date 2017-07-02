@@ -1,7 +1,7 @@
 from vertex import Vertex
 from direction import Direction
 from plane import Plane
-from entities import equal, inside
+from entities import equ, ge, gt, le, lt, inside
 from line import Line
 
 
@@ -19,7 +19,7 @@ class Edge:
         self.__p[args[0]].update(args[1], args[2])
 
     def points(self):
-        return self.__p
+        return self.__p[0], self.__p[1]
 
     def point(self, n: int):
         return self.__p[n]
@@ -69,12 +69,12 @@ class Edge:
             y1 = self.__p[1].value('Y')
 
         img = []
-        if equal(x0, x1):
+        if equ(x0, x1):
             for y in range(int(min(y0, y1)), int(max(y0, y1))+1):
                 img.append((x0, float(y)))
             return img
 
-        if equal(y0, y1):
+        if equ(y0, y1):
             for x in range(int(min(x0, x1)), int(max(x0, x1))+1):
                 img.append((float(x), y0))
             return img
@@ -120,20 +120,20 @@ class Edge:
             a10, b10 = edge.point(0).value('X'), edge.point(0).value('Z')
             a11, b11 = edge.point(1).value('X'), edge.point(1).value('Z')
 
-        if equal(a00, a01) and equal(b00, b01):                             # .
+        if equ(a00, a01) and equ(b00, b01):                             # .
             return empty
 
-        if equal(a10, a11) and equal(b10, b11):                             #  .
+        if equ(a10, a11) and equ(b10, b11):                             #  .
             return empty
 
         a = 0
         b = 0
 
-        if equal(a00, a01):                                                 # |
-            if equal(a10, a11):                                             #  |
+        if equ(a00, a01):                                                 # |
+            if equ(a10, a11):                                             #  |
                 return empty                                                   # ||
             else:
-                if equal(b10, b11):                                         #  -
+                if equ(b10, b11):                                         #  -
                     if inside(a10, a00, a11) and inside(b00, b10, b01):     # |-
                         a, b = a00, b10
                     else:
@@ -146,14 +146,14 @@ class Edge:
                     else:
                         return empty
         else:
-            if equal(b00, b01):                                             # -
-                if equal(a10, a11):                                         #  |
+            if equ(b00, b01):                                             # -
+                if equ(a10, a11):                                         #  |
                     if inside(b10, b00, b11) and inside(a00, a10, a01):     # -|
                         a, b = a10, b00
                     else:
                         return empty
                 else:
-                    if equal(b10, b11):                                     #  -
+                    if equ(b10, b11):                                     #  -
                         return empty                                           # --
                     else:                                                   #  /
                         k, b = self.kb(a10, b10, a11, b11)
@@ -163,7 +163,7 @@ class Edge:
                         else:
                             return empty
             else:                                                           # /
-                if equal(a10, a11):                                         #  |
+                if equ(a10, a11):                                         #  |
                     k, b = self.kb(a00, b00, a01, b01)
                     y = k*b10 + b
                     if inside(b10, y, b11):                                 # /|
@@ -171,7 +171,7 @@ class Edge:
                     else:
                         return empty
                 else:
-                    if equal(b10, b11):                                     #  -
+                    if equ(b10, b11):                                     #  -
                         k, b = self.kb(a00, b00, a01, b01)                  # /-
                         x = (b10-b)/k
                         if inside(a10, x, a11):
@@ -181,7 +181,7 @@ class Edge:
                     else:                                                   #  /
                         k0, b0 = self.kb(a00, b00, a01, b01)                # //
                         k1, b1 = self.kb(a10, b10, a11, b11)
-                        if equal(k0, k1):
+                        if equ(k0, k1):
                             return empty
                         else:
                             a = (b1-b0)/(k0-k1)
@@ -214,26 +214,70 @@ class Edge:
         return
 
     def line(self):
-        x0 = self.__p[0].value('X')
-        y0 = self.__p[0].value('Y')
-        z0 = self.__p[0].value('Z')
-
-        x1 = self.__p[1].value('X')
-        y1 = self.__p[1].value('Y')
-        z1 = self.__p[1].value('Z')
+        x0, y0, z0 = self.point(0).value()
+        x1, y1, z1 = self.point(1).value()
 
         n = Vertex(x0, y0, z0)
         v = Vertex(x1-x0, y1-y0, z1-z0)
         return Line(n, v)
 
     def middle(self):
-        x0 = self.__p[0].value('X')
-        y0 = self.__p[0].value('Y')
-        z0 = self.__p[0].value('Z')
+        return self.point(0).middle(self.point(1))
 
-        x1 = self.__p[1].value('X')
-        y1 = self.__p[1].value('Y')
-        z1 = self.__p[1].value('Z')
+    def opposite_vertex(self, p):
+        if self.point(0) == p:
+            return self.point(1)
 
-        return Vertex((x0 + x1)/2, (y0 + y1)/2, (z0 + z1)/2)
+        if self.point(1) == p:
+            return self.point(0)
 
+        return None
+
+    def is_inner_point(self, p: Vertex):
+        d0 = self.point(0).distance(p)
+        d1 = self.point(1).distance(p)
+        d01 = self.point(0).distance(self.point(1))
+
+        return ge(d01, d0) and ge(d01, d1)
+
+    def intersect_point(self, l: Line):
+        l1 = Line(self.point(0), self.point(0).vector(self.point(1)))
+
+        x0, y0, z0 = l1.point().value()
+        x1, y1, z1 = l.point().value()
+
+        p00, p01, p02 = l1.vector().value()
+        p10, p11, p12 = l.vector().value()
+
+        if p00:
+            if p01*p10/p00 - p11:
+                s = (y1-y0-(p01*(x1-x0))/p00)/(p01*p10/p00 - p11)
+            elif p02*p10/p00 - p12:
+                s = (z1-z0-(p02*(x1-x0))/p00)/(p02*p10/p00 - p12)
+            else:
+                return None
+
+        elif p01:
+            if p00*p11/p01 - p10:
+                s = (x1-x0-(p00*(y1-y0))/p01)/(p00*p11/p01 - p10)
+            elif p02*p11/p01 - p12:
+                s = (z1-z0-(p02*(y1-y0))/p01)/(p02*p11/p01 - p12)
+            else:
+                return None
+
+        elif p02:
+            if p00*p12/p02 - p10:
+                s = (x1-x0-(p00*(z1-z0))/p02)/(p00*p12/p02 - p10)
+            elif p01*p12/p02 - p11:
+                s = (y1-y0-(p01*(z1-z0))/p02)/(p01*p12/p02 - p11)
+            else:
+                return None
+
+        else:
+            return None
+
+        x = p10 * s + x1
+        y = p11 * s + y1
+        z = p12 * s + z1
+
+        return Vertex(x, y, z)

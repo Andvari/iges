@@ -36,26 +36,26 @@ class Plane:
         a1, b1, c1, d1 = plane.abcd()
 
         k = []
-        if equal(a1, 0):
-            if not equal(a0, 0):
+        if equ(a1, 0):
+            if not equ(a0, 0):
                 return False
         else:
             k.append(a0/a1)
 
-        if equal(b1, 0):
-            if not equal(b0, 0):
+        if equ(b1, 0):
+            if not equ(b0, 0):
                 return False
         else:
             k.append(b0/b1)
 
-        if equal(c1, 0):
-            if not equal(c0, 0):
+        if equ(c1, 0):
+            if not equ(c0, 0):
                 return False
         else:
             k.append(c0/c1)
 
-        if equal(d1, 0):
-            if not equal(d0, 0):
+        if equ(d1, 0):
+            if not equ(d0, 0):
                 return False
         else:
             k.append(d0/d1)
@@ -64,30 +64,33 @@ class Plane:
             return True
 
         for i in range(1, len(k)):
-            if not equal(k[i-1], k[i]):
+            if not equ(k[i-1], k[i]):
                 return False
 
         return True
 
-    def parallel(self, plane):
-        a0, b0, c0, d0 = self.abcd()
-        a1, b1, c1, d1 = plane.abcd()
+    def parallel(self, p):
+        v0, d0 = self.abcd()
+        v1, d1 = p.abcd()
+
+        a0, b0, c0 = v0.value()
+        a1, b1, c1 = v1.value()
 
         k = []
-        if equal(a1, 0):
-            if not equal(a0, 0):
+        if equ(a1, 0):
+            if not equ(a0, 0):
                 return False
         else:
             k.append(a0/a1)
 
-        if equal(b1, 0):
-            if not equal(b0, 0):
+        if equ(b1, 0):
+            if not equ(b0, 0):
                 return False
         else:
             k.append(b0/b1)
 
-        if equal(c1, 0):
-            if not equal(c0, 0):
+        if equ(c1, 0):
+            if not equ(c0, 0):
                 return False
         else:
             k.append(c0/c1)
@@ -96,23 +99,16 @@ class Plane:
             return True
 
         for i in range(1, len(k)):
-            if not equal(k[i-1], k[i]):
+            if not equ(k[i-1], k[i]):
                 return False
 
         return True
 
     def abcd(self):
-        x0 = self.__p[0].value('X')
-        x1 = self.__p[1].value('X')
-        x2 = self.__p[2].value('X')
 
-        y0 = self.__p[0].value('Y')
-        y1 = self.__p[1].value('Y')
-        y2 = self.__p[2].value('Y')
-
-        z0 = self.__p[0].value('Z')
-        z1 = self.__p[1].value('Z')
-        z2 = self.__p[2].value('Z')
+        x0, y0, z0 = self.__p[0].value()
+        x1, y1, z1 = self.__p[1].value()
+        x2, y2, z2 = self.__p[2].value()
 
         k1 = (z2 - z0) * (y1 - y0) - (z1 - z0) * (y2 - y0)
         k2 = (z2 - z0) * (x1 - x0) - (z1 - z0) * (x2 - x0)
@@ -123,16 +119,17 @@ class Plane:
         c = k3
         d = -k1*x0 + k2*y0 - k3*z0
 
-        return -a, -b, -c, -d       # to the meat
+        return Vertex(a, b, c), d
 
     def print(self):
-        a, b, c, d = self.abcd()
+        v, d = self.abcd()
         for point in self.__p:
             print(point.value('X'), point.value('Y'), point.value('Z'))
+        a, b, c = v.value()
         print("abcd: ", a, b, c, d)
         print('--------------')
 
-    def intersect(self, p):
+    def intersect_line(self, p):
 
         a1, b1, c1, d1 = self.abcd()
         a2, b2, c2, d2 = p.abcd()
@@ -162,23 +159,40 @@ class Plane:
         y0 = b + l.point().value('Y')
         z0 = c + l.point().value('Z')
 
-        #print("x0,y0,z0: ", x0, y0, z0)
+        x1, y1, z1 = p2.value()
 
-        x1 = p2.value('X')
-        y1 = p2.value('Y')
-        z1 = p2.value('Z')
+        l = Line(Vertex(x0, y0, z0), Vertex(x1-x0, y1-y0, z1-z0))
 
-        #print("x1,y1,z1: ", x1, y1, z1)
+        p = self.intersect_point(l)
 
-        dx = x1 - x0
-        dy = y1 - y0
-        dz = z1 - z0
+        if p:
+            x, y, z = p.value()
 
-        #print("dx,dy,dz: ", dx, dy, dz)
-        #print("a,b,c: ", a, b, c)
+            l1 = Vertex(x0, y0, z0).distance(Vertex(x1, y1, z1))
+            l2 = Vertex(x0, y0, z0).distance(Vertex(x, y, z))
 
-        if dx*a + dy*b + dz*c == 0:
-            return('Concave')
+            if l1 > l2:
+                return 'Concave'
+            else:
+                return 'Convex'
+
+        return 'Concave'
+
+    def vector(self):
+        a, b, c, d = self.abcd()
+        return Vertex(a, b, c)
+
+    def intersect_point(self, l: Line):
+
+        v, d = self.abcd()
+        v1 = l.vector()
+        a, b, c = v.value()
+
+        if abs(v.scalar_mult(v1)) < PRECISION:
+            return None
+
+        x0, y0, z0 = l.point().value()
+        dx, dy, dz = l.vector().value()
 
         if dx and dy and dz:
             y = (a*y0*dx/dy - a*x0 + c*y0*dz/dy - c*z0 - d)/(a*dx/dy + b + c*dz/dy)
@@ -220,41 +234,4 @@ class Plane:
             y = y0
             z = z0
 
-        l1 = math.sqrt((x1 - x0) * (x1 - x0) + (y1 - y0) * (y1 - y0) + (z1 - z0) * (z1 - z0))
-        l2 = math.sqrt((x - x0) * (x - x0) + (y - y0) * (y - y0) + (z - z0) * (z - z0))
-
-        #print("x,y,z: ", x, y, z)
-        #print("l1,l2: ", l1, l2)
-
-        if l1 > l2:
-            return('Concave')
-        else:
-            return('Convex')
-
-        return
-
-    def vector(self):
-        a, b, c, d = self.abcd()
-        return Vertex(a, b, c)
-
-    def intersect_point(self, l: Line):
-
-        a1, b1, c1, d1 = self.abcd()
-        a2, b2, c2, d2 = p.abcd()
-
-        v = Vertex(b1 * c2 - b2 * c1, -(a1 * c2 - a2 * c1), a1 * b2 - a2 * b1)
-        det = a1*b2 - a2*b1
-        if det:
-            n = Vertex((d2*b1 - d1*b2)/det, -(d2*a1 - d1*a2)/det, 0)
-        else:
-            det = a1*c2 - a2*c1
-            if det:
-                n = Vertex((d2 * c1 - d1 * c2) / det, -(d2 * a1 - d1 * a2) / det, 0)
-            else:
-                det = b1*c2 - b2*c1
-                if det:
-                    n = Vertex((d2 * c1 - d1 * c2) / det, -(d2 * b1 - d1 * b2) / det, 0)
-                else:
-                    return None
-
-        return Line(n, v)
+        return Vertex(x, y, z)

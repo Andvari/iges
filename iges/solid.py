@@ -665,16 +665,49 @@ class Solid:
 
         self.__faces[args[0]].print()
 
-    def search_meat(self, f):
+    def refactor(self):
 
-        ip = f.inside_point()
-        a, b, c, d = f.plane().abcd()
-        l = Line(ip, Vertex(a, b, c))
+        ii = 1
+        for f in self.__faces:
+            print("ii: ", ii)
+            ii+=1
+            f.print()
+            ip = f.inner_point()
+            abc, d = f.plane().abcd()
+            l = Line(ip, abc)
 
-        p = []
-        for face in self.__faces:
-            if face.intersect_point(l):
-                p.append(face.intersect_point(l))
+            p = []
+            for ff in self.__faces:
+                fp = ff.intersect_point(l)
+                if fp:
+                    p.append(fp)
+
+            print('p:')
+            for pp in p:
+                pp.print('\n')
+            print('--')
+
+            p.sort(key=lambda x: x.value('X'))
+
+            r = True
+            for i in range(len(p)):
+                if p[i] == ip:
+                    break
+                r = not r
+
+            p0 = ip + abc
+
+            if r:
+                p1 = p[i+1]
+            else:
+                p1 = p[i-1]
+
+            if Edge(p0, p1).is_inner_point(ip):
+                f.mirror()
+
+            #f.print()
+            #abc, d = f.plane().abcd()
+            #abc.print('\n')
 
         return
 

@@ -189,11 +189,24 @@ ORIENTATION_UNKNOWN = -1
 PRECISION = 1e-6
 
 
-def equal(a, b):
-    if abs(a-b) < PRECISION:
-        return True
+def equ(a, b):
+    return abs(a-b) < PRECISION
 
-    return False
+
+def ge(a, b):
+    return a > b-PRECISION
+
+
+def gt(a, b):
+    return a > b+PRECISION
+
+
+def le(a, b):
+    return a+PRECISION < b
+
+
+def lt(a, b):
+    return a-PRECISION < b
 
 
 def inside(a, b, c):

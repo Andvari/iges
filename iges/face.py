@@ -6,6 +6,7 @@ from vertex import Vertex
 from direction import Direction
 from plane import Plane
 from line import Line
+from entities import equ, ge, gt, le, lt
 
 
 class Face:
@@ -28,15 +29,33 @@ class Face:
     def edges(self):
         return self.__edges
 
-    def virtexes(self):
+    def vertexes(self):
         r = []
-        for edge in self.__edges:
-            r.append(edge.p(0))
+        for e in self.__edges:
+            r.append(e.point(0))
         return r
 
     def size(self):
         return len(self.__edges)
 
+    def __eq__(self, f):
+
+        if not self.size() == f.size():
+            return False
+
+        for p in self.vertexes():
+            found = False
+            for pp in f.vertexes():
+                if p == pp:
+                    found = True
+                    break
+            if not found:
+                return False
+
+        return True
+
+
+    '''
     def orientation(self):
         m = []
         for edge in self.__edges:
@@ -68,7 +87,9 @@ class Face:
             self.orient = ORIENTATION_CCW
 
         return self.orient
+    '''
 
+    '''
     def anomalies(self):
 
         if self.orient == ORIENTATION_UNKNOWN:
@@ -102,18 +123,18 @@ class Face:
             return a_cw
         else:
             return a_ccw
+    '''
 
     def plane(self):
         return Plane([self.__edges[0].point(0), self.__edges[0].point(1), self.__edges[1].point(1)])
 
     def mirror(self):
-        t = list(reversed(self.__edges))
-        self.__edges = t
+        ne = []
         for e in self.__edges:
-            e.reverse()
+            ne.append(e.reverse())
+        self.__edges = list(reversed(ne))
 
     def print(self, *args):
-
         if len(args) == 0:
             for e in self.__edges:
                 e.print()
@@ -126,6 +147,7 @@ class Face:
             img += e.image(p)
         return Image(img)
 
+    '''
     def equ(self, face):
         if len(self.__edges) != len(face.edges()):
             return False
@@ -141,6 +163,7 @@ class Face:
             return True
 
         return False
+    '''
 
     def expand(self, edge: Edge, way: Direction, d: int):
         if len(self.__edges) == 0:
@@ -181,17 +204,18 @@ class Face:
         if self.i < len(self.__edges):
             self.i += 1
             return self.__edges[self.i-1]
-
         else:
             self.i = 0
             raise StopIteration
 
+    '''
     def coordinate(self, p):
         m = -1e6
         for e in self.__edges:
             m = max(m, e.point(0).value(p))
             m = max(m, e.point(1).value(p))
         return m
+    '''
 
     def intersect(self, face):
         if not self.plane().coincide(face.plane()):
@@ -232,28 +256,28 @@ class Face:
         return chains
 
     def point_out_of_line(self, l: Line):
-        for p in self.__edges:
-            if not l.belong(p.point(0)):
-                return p.point(0)
-            if not l.belong(p.point(1)):
-                return p.point(1)
-
-        print("No points founded")
+        for p in self.vertexes():
+            if not l.belong(p):
+                return p
+        return None
 
     def hull(self, f):
         p1 = self.plane()
-        p1.print()
         p2 = f.plane()
-        p2.print()
-        l = p1.intersect(p2)
+        l = p1.intersect_line(p2)
         if l:
-            l.print()
-            p = f.point_out_of_line(l)
-            return p1.angle(l, p)
+            return p1.angle(l, f.point_out_of_line(l))
         return "Planes is parallel"
 
     def intersect_line(self, f):
-        return self.plane().intersect(f.plane())
+        return self.plane().intersect_line(f.plane())
+
+    def intersect_point(self, l):
+        ip = self.plane().intersect_point(l)
+        if ip:
+            if self.is_inner_point(ip):
+                return ip
+        return None
 
     def coincide_edges(self, l: Line):
         edges = []
@@ -262,54 +286,68 @@ class Face:
                 edges.append(e)
         return edges
 
-    def inside_point(self):
-
-        e = self.__edges[0]
-        m = e.middle()
-        l = Line(m, e.line().vector().vect_mult(self.plane().vector()))
-
+    def cross_points(self, l: Line):
         ip = []
         for e in self.__edges:
-            if not e.line().coincide(l):
-                p = e.line().intersect(l)
-                p0 = e.point(0)
-                p1 = e.point(1)
+            p = e.intersect_point(l)
+            if p:
+                p0, p1 = e.points()
 
-                d0 = p.distance(p0)
-                d1 = p.distance(p1)
-                d01 = p0.distance(p1)
+                if p == p0:
+                    e1, e2 = self.edges_with_common_vertex(p0)
+                    p0n = e1.opposite_vertex(p0)
+                    p1 = e2.opposite_vertex(p0)
+                    p0 = p0n
+                elif p1 == p:
+                    e1, e2 = self.edges_with_common_vertex(p1)
+                    p0n = e1.opposite_vertex(p1)
+                    p1 = e2.opposite_vertex(p1)
+                    p0 = p0n
 
-                if d01 >= d0 and d01 >= d1:
-                    ip.append(p)
+                if Edge(p0, p1).is_inner_point(p):
+                    found = False
+                    for pp in ip:
+                        if pp == p:
+                            found = True
+                            break
+                    if not found:
+                        ip.append(p)
 
-                if ip:
-                    xmin = 1e9
-                    t1 = Vertex()
-                    for p in ip:
-                        if xmin >= p.value('X'):
-                            xmin = p.value('X')
-                            t1 = p
-                    ip.remove(t1)
+        return ip
 
-                    xmin = 1e9
-                    t2 = Vertex()
-                    for p in ip:
-                        if xmin >= p.value('X'):
-                            xmin = p.value('X')
-                            t2 = p
+    def inner_point(self):
+        p0 = self.vertexes()[0]
+        p1 = max(self.vertexes(), key=lambda x: x.distance(p0))
+        ip = self.cross_points(Line(p0, p0.vector(p1)))
+        t0 = min(ip, key=lambda x: x.distance(ip[0]))
+        ip.remove(t0)
+        t1 = min(ip, key=lambda x: x.distance(ip[0]))
 
-                    x0 = t1.value('X')
-                    y0 = t1.value('Y')
-                    z0 = t1.value('Z')
+        return t0.middle(t1)
 
-                    x1 = t2.value('X')
-                    y1 = t2.value('Y')
-                    z1 = t2.value('Z')
+    def edges_with_common_vertex(self, p: Vertex):
+        ee = []
+        for e in self.__edges:
+            if e.point(0) == p or e.point(1) == p:
+                ee.append(e)
+        return ee[0], ee[1]
 
-                    return Vertex((x0+x1)/2, (y0+y1)/2, (z0+z1)/2)
+    def is_inner_point(self, p: Vertex):
 
-        return None
+        p0 = self.vertexes()[0]
+        if p == p0:
+            p0 = max(self.vertexes(), key=lambda x: x.distance(p0))
 
-    def is_inside_point(self, p: Vertex):
-        pass
+        ip = self.cross_points(Line(p0, p0.vector(p)))
+        ip.sort(key=lambda x: x.distance(p0))
+
+        r = True
+        for i in range(1, len(ip)):
+            if Edge(ip[i-1], ip[i]).is_inner_point(p):
+                break
+            r = not r
+
+        return r
+
+
 

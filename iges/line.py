@@ -19,17 +19,9 @@ class Line:
 
     def belong(self, p: Vertex):
 
-        x = p.value('X')
-        y = p.value('Y')
-        z = p.value('Z')
-
-        x0 = self.__n.value('X')
-        y0 = self.__n.value('Y')
-        z0 = self.__n.value('Z')
-
-        dx = self.__v.value('X')
-        dy = self.__v.value('Y')
-        dz = self.__v.value('Z')
+        x, y, z = p.value()
+        x0, y0, z0 = self.point().value()
+        dx, dy, dz = self.vector().value()
 
         if dx and dy and dz:
             if (x-x0)/dx == (y-y0)/dy and (y-y0)/dy == (z-z0)/dz:
@@ -81,21 +73,13 @@ class Line:
 
     def coincide(self, l):
 
-        x0 = self.__n.value('X')
-        y0 = self.__n.value('Y')
-        z0 = self.__n.value('Z')
+        x0, y0, z0 = self.point().value()
+        dx, dy, dz = self.point().value()
+        xs, ys, zs = l.point().value()
 
-        dx = self.__v.value('X')
-        dy = self.__v.value('Y')
-        dz = self.__v.value('Z')
-
-        xs = l.point().value('X')
-        ys = l.point().value('Y')
-        zs = l.point().value('Z')
-
-        xf = xs + l.point().value('X')
-        yf = ys + l.point().value('Y')
-        zf = zs + l.point().value('Z')
+        xf = xs + l.vector().value('X')
+        yf = ys + l.vector().value('Y')
+        zf = zs + l.vector().value('Z')
 
         if dx and dy and dz:
             if not (xs - x0)/dx == (ys - y0)/dy or not (ys - y0)/dy == (zs - z0)/dz:

@@ -1,4 +1,4 @@
-from entities import equal
+from entities import equ
 import math
 
 
@@ -23,7 +23,7 @@ class Vertex:
 
     def value(self, *args):
         if len(args) == 0:
-            return self.__coordinates
+            return self.__coordinates['X'], self.__coordinates['Y'], self.__coordinates['Z']
 
         if len(args) == 1:
             return self.__coordinates[args[0]]
@@ -34,39 +34,56 @@ class Vertex:
 
         return v
 
-    def equ(self, v):
-        if equal(self.value('X'), v.value('X')):
-            if equal(self.value('Y'), v.value('Y')):
-                if equal(self.value('Z'), v.value('Z')):
-                    return True
+    def __eq__(self, p):
+        x0, y0, z0 = self.value()
+        x1, y1, z1 = p.value()
+        return equ(x0, x1) and equ(y0, y1) and equ(z0, z1)
 
-        return False
+    def print(self, *args):
+        e = ""
+        if len(args):
+            e = args[0]
+        print(self.__coordinates['X'], self.__coordinates['Y'], self.__coordinates['Z'], ', ', end=e)
 
-    def print(self):
-        print(self.__coordinates['X'], self.__coordinates['Y'], self.__coordinates['Z'], end="")
-
-    def distance(self, v):
-        x0 = self.value('X')
-        y0 = self.value('Y')
-        z0 = self.value('Z')
-
-        x1 = v.value('X')
-        y1 = v.value('Y')
-        z1 = v.value('Z')
+    def distance(self, p):
+        x0, y0, z0 = self.value()
+        x1, y1, z1 = p.value()
 
         return math.sqrt((x1-x0)*(x1-x0)+(y1-y0)*(y1-y0)+(z1-z0)*(z1-z0))
 
     def vect_mult(self, p):
-        x0 = self.__coordinates['X']
-        y0 = self.__coordinates['Y']
-        z0 = self.__coordinates['Z']
-
-        x1 = p.value('X')
-        y1 = p.value('Y')
-        z1 = p.value('Z')
+        x0, y0, z0 = self.value()
+        x1, y1, z1 = p.value()
 
         x = y0 * z1 - y1 * z0
         y = -x0 * z1 + x1 * z0
         z = x0 * y1 - x1 * y0
 
         return Vertex(x, y, z)
+
+    def scalar_mult(self, p):
+        x0, y0, z0 = self.value()
+        x1, y1, z1 = p.value()
+
+        return x0 * x1 + y0 * y1 + z0 * z1
+
+    def vector(self, p):
+        x0, y0, z0 = self.value()
+        x1, y1, z1 = p.value()
+
+        return Vertex(x1-x0, y1-y0, z1-z0)
+
+    def middle(self, p):
+        x0, y0, z0 = self.value()
+        x1, y1, z1 = p.value()
+
+        return Vertex((x0+x1)/2, (y0+y1)/2, (z0+z1)/2)
+
+    def __add__(self, p):
+        x0, y0, z0 = self.value()
+        x1, y1, z1 = p.value()
+        return Vertex(x0+x1, y0+y1, z0+z1)
+
+    def __neg__(self):
+        x, y, z = self.value()
+        return Vertex(-x, -y, -z)
