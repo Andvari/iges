@@ -106,20 +106,27 @@ class Plane:
 
     def abcd(self):
 
-        x0, y0, z0 = self.__p[0].value()
-        x1, y1, z1 = self.__p[1].value()
-        x2, y2, z2 = self.__p[2].value()
+        v = Vertex(0, 0, 0)
+        p = self.__p
+        p.append(self.__p[0])
+        p.append(self.__p[1])
 
-        k1 = (z2 - z0) * (y1 - y0) - (z1 - z0) * (y2 - y0)
-        k2 = (z2 - z0) * (x1 - x0) - (z1 - z0) * (x2 - x0)
-        k3 = (y2 - y0) * (x1 - x0) - (y1 - y0) * (x2 - x0)
+        for i in range(1, len(p)-1):
+            x0, y0, z0 = p[i-1].value()
+            x1, y1, z1 = p[i].value()
+            x2, y2, z2 = p[i+1].value()
 
-        a = k1
-        b = -k2
-        c = k3
-        d = -k1*x0 + k2*y0 - k3*z0
+            k1 = (z2 - z0) * (y1 - y0) - (z1 - z0) * (y2 - y0)
+            k2 = (z2 - z0) * (x1 - x0) - (z1 - z0) * (x2 - x0)
+            k3 = (y2 - y0) * (x1 - x0) - (y1 - y0) * (x2 - x0)
 
-        return Vertex(a, b, c), d
+            t = Vertex(k1, -k2, k3)
+            t.norm()
+            v += t
+
+            d = -k1*x0 + k2*y0 - k3*z0
+
+        return v, d
 
     def print(self):
         v, d = self.abcd()

@@ -317,7 +317,11 @@ class Face:
 
     def inner_point(self):
         p0 = self.vertexes()[0]
-        p1 = max(self.vertexes(), key=lambda x: x.distance(p0))
+        if self.size() == 3:
+            p1 = self.vertexes()[1].middle(self.vertexes()[2])
+        else:
+            p1 = max(self.vertexes(), key=lambda x: x.distance(p0))
+
         ip = self.cross_points(Line(p0, p0.vector(p1)))
         t0 = min(ip, key=lambda x: x.distance(ip[0]))
         ip.remove(t0)
