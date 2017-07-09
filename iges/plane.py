@@ -140,9 +140,9 @@ class Plane:
     def intersect_line(self, p):
 
         v, d1 = self.abcd()
-        a1, b1, c1 = v.value()
+        a1, b1, c1 = v
         v, d2 = p.abcd()
-        a2, b2, c2 = v.value()
+        a2, b2, c2 = v
 
         v = Vertex(b1 * c2 - b2 * c1, -(a1 * c2 - a2 * c1), a1 * b2 - a2 * b1)
         det = a1*b2 - a2*b1

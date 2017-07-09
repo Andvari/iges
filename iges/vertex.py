@@ -85,6 +85,11 @@ class Vertex:
         x1, y1, z1 = p.value()
         return Vertex(x0+x1, y0+y1, z0+z1)
 
+    def __sub__(self, p):
+        x0, y0, z0 = self.value()
+        x1, y1, z1 = p.value()
+        return Vertex(x1-x0, y1-y0, z1-z0)
+
     def __neg__(self):
         x, y, z = self.value()
         return Vertex(-x, -y, -z)

@@ -667,15 +667,10 @@ class Solid:
 
     def refactor(self):
 
-        ii = 1
         for f in self.__faces:
-            print("ii: ", ii)
-            ii += 1
-            #f.print()
             ip = f.inner_point()
             abc, d = f.plane().abcd()
             l = Line(ip, abc)
-            #l.print()
 
             p = []
             for ff in self.__faces:
@@ -733,9 +728,9 @@ class Solid:
             if Edge(p0, p1).is_inner_point(ip):
                 f.mirror()
 
-            f.print()
-            abc, d = f.plane().abcd()
-            abc.print('\n')
+            #f.print()
+            #abc, d = f.plane().abcd()
+            #abc.print('\n')
 
         return
 
@@ -744,23 +739,23 @@ class Solid:
         e2 = []
         for i in range(self.size()):
             for j in range(i+1, self.size()):
-                print(i, j)
-                self.face(i).print()
-                print('-')
-                self.face(j).print()
-                print('--')
                 a = self.face(i).hull(self.face(j))
-                print(a)
-                print('---')
-                if a == 'Concave':
-                    l = self.face(i).intersect_line(self.face(j))
-                    l.print()
+                print(i, j)
+                if a:
+                    self.face(i).print()
+                    print('---')
+                    self.face(j).print()
                     print('----')
-                    e1 = self.face(i).coincide_edges(l)
-                    e2 = self.face(j).coincide_edges(l)
-                    print(e1)
-                    print(e2)
-                    print('-----')
+                    print(a)
+                    if a == 'Concave':
+                        l = self.face(i).intersect_line(self.face(j))
+                        l.print()
+                        print('----')
+                        e1 = self.face(i).coincide_edges(l)
+                        e2 = self.face(j).coincide_edges(l)
+                        print(e1)
+                        print(e2)
+                        print('-----')
 
     def facelist(self, p: Vertex):
         fl = []

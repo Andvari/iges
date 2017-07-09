@@ -262,12 +262,17 @@ class Face:
         return None
 
     def hull(self, f):
-        p1 = self.plane()
-        p2 = f.plane()
-        l = p1.intersect_line(p2)
-        if l:
-            return p1.angle(l, f.point_out_of_line(l))
-        return "Planes is parallel"
+        for e in self.edges():
+            for ee in f.edges():
+                if e.line().coincide(ee.line()):
+                    if e.point(0) == ee.point(0) or e.point(0) == ee.point(1):
+                        if ee.is_inner_point(1):
+                            l = Line(e.point(0), e.point(1)-e.point(0))
+                            return self.plane().angle(l, f.point_out_of_line(l))
+                        return None
+                    else:
+                        if ee.is_straight_inner_point(1)
+        return None
 
     def intersect_line(self, f):
         return self.plane().intersect_line(f.plane())

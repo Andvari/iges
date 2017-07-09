@@ -240,6 +240,13 @@ class Edge:
 
         return ge(d01, d0) and ge(d01, d1)
 
+    def is_straight_inner_point(self, p: Vertex):
+        d0 = self.point(0).distance(p)
+        d1 = self.point(1).distance(p)
+        d01 = self.point(0).distance(self.point(1))
+
+        return gt(d01, d0) and gt(d01, d1)
+
     def intersect_point(self, l: Line):
         l1 = Line(self.point(0), self.point(0).vector(self.point(1)))
 

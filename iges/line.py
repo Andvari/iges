@@ -73,13 +73,10 @@ class Line:
 
     def coincide(self, l):
 
-        x0, y0, z0 = self.point().value()
-        dx, dy, dz = self.point().value()
-        xs, ys, zs = l.point().value()
-
-        xf = xs + l.vector().value('X')
-        yf = ys + l.vector().value('Y')
-        zf = zs + l.vector().value('Z')
+        x0, y0, z0 = self.point()
+        dx, dy, dz = self.vector()
+        xs, ys, zs = l.point()
+        xf, yf, zf = l.point() + l.vector()
 
         if dx and dy and dz:
             if not (xs - x0)/dx == (ys - y0)/dy or not (ys - y0)/dy == (zs - z0)/dz:
