@@ -6,9 +6,10 @@ from edge import Edge
 import math
 
 #filename = 'top-champfer.iges'
-#filename = 'cube.IGS'
+filename = 'cube.IGS'
 #filename = 'cube_fc.iges'
-filename = 'g-part.IGS'
+#filename = 'g-part.IGS'
+#filename = 'pyram.IGS'
 
 solid = Solid(filename, 0)
 solid_ = Solid(filename, 0)
@@ -18,4 +19,4 @@ solid_ = Solid(filename, 0)
 #print('-----')
 
 solid.refactor()
-#solid.run()
+solid.run()

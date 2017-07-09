@@ -298,20 +298,22 @@ class Face:
                     p0n = e1.opposite_vertex(p0)
                     p1 = e2.opposite_vertex(p0)
                     p0 = p0n
-                elif p1 == p:
+                elif p == p1:
                     e1, e2 = self.edges_with_common_vertex(p1)
                     p0n = e1.opposite_vertex(p1)
                     p1 = e2.opposite_vertex(p1)
                     p0 = p0n
 
-                if Edge(p0, p1).is_inner_point(p):
-                    found = False
-                    for pp in ip:
-                        if pp == p:
-                            found = True
-                            break
-                    if not found:
-                        ip.append(p)
+                ppp = Edge(p0, p1).intersect_point(l)
+                if ppp:
+                    if Edge(p0, p1).is_inner_point(ppp):
+                        found = False
+                        for pp in ip:
+                            if pp == p:
+                                found = True
+                                break
+                        if not found:
+                            ip.append(p)
 
         return ip
 
@@ -337,7 +339,6 @@ class Face:
         return ee[0], ee[1]
 
     def is_inner_point(self, p: Vertex):
-
         p0 = self.vertexes()[0]
         if p == p0:
             p0 = max(self.vertexes(), key=lambda x: x.distance(p0))
@@ -345,13 +346,17 @@ class Face:
         ip = self.cross_points(Line(p0, p0.vector(p)))
         ip.sort(key=lambda x: x.distance(p0))
 
-        r = True
-        for i in range(1, len(ip)):
-            if Edge(ip[i-1], ip[i]).is_inner_point(p):
-                break
-            r = not r
+        if ip:
+            r = True
+            for i in range(1, len(ip)):
+                if Edge(ip[i-1], ip[i]).is_inner_point(p):
+                    break
+                r = not r
 
-        return r
+            return r
 
+        return False
 
+    def coincide_abcd(self, p: Vertex):
+        return self.plane().coincide_abcd(p)
 

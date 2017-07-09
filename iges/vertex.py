@@ -4,6 +4,7 @@ import math
 
 class Vertex:
     def __init__(self, *args):
+        self.i = 'X'
 
         if len(args) == 0:
             self.__coordinates = {}
@@ -96,3 +97,21 @@ class Vertex:
             self.__coordinates['X'] /= norm
             self.__coordinates['Y'] /= norm
             self.__coordinates['Z'] /= norm
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        if self.i == 'X':
+            self.i = 'Y'
+            return self.__coordinates['X']
+        elif self.i == 'Y':
+            self.i = 'Z'
+            return self.__coordinates['Y']
+        elif self.i == 'Z':
+            self.i = 'T'
+            return self.__coordinates['Z']
+        else:
+            self.i = 'X'
+            raise StopIteration
+

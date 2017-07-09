@@ -670,24 +670,52 @@ class Solid:
         ii = 1
         for f in self.__faces:
             print("ii: ", ii)
-            ii+=1
-            f.print()
+            ii += 1
+            #f.print()
             ip = f.inner_point()
             abc, d = f.plane().abcd()
             l = Line(ip, abc)
+            #l.print()
 
             p = []
             for ff in self.__faces:
                 fp = ff.intersect_point(l)
                 if fp:
-                    p.append(fp)
+                    found = False
+                    for pp in p:
+                        if pp == fp:
+                            found = True
+                            break
+                    if not found:
+                        p.append(fp)
 
-            print('p:')
-            for pp in p:
-                pp.print('\n')
-            print('--')
+            if p:
+                if not p[0].value('X') == p[1].value('X'):
+                    p.sort(key=lambda x: x.value('X'))
+                elif not p[0].value('Y') == p[1].value('Y'):
+                    p.sort(key=lambda x: x.value('Y'))
+                else:
+                    p.sort(key=lambda x: x.value('Z'))
 
-            p.sort(key=lambda x: x.value('X'))
+            ins = True
+            for i in range(1, len(p)-1):
+                c = 0
+                for ff in self.facelist(p[i]):
+                    r = ff.coincide_abcd(p[i+1])
+                    if r is True:
+                        c += 1
+                    elif r is False:
+                        c -= 1
+                    else:
+                        if ins:
+                            c += 1
+                        else:
+                            c -= 1
+
+                if (ins and c >= 0) or (not ins and c <= 0):
+                    p.remove(p[i])
+
+                ins = not ins
 
             r = True
             for i in range(len(p)):
@@ -705,9 +733,9 @@ class Solid:
             if Edge(p0, p1).is_inner_point(ip):
                 f.mirror()
 
-            #f.print()
-            #abc, d = f.plane().abcd()
-            #abc.print('\n')
+            f.print()
+            abc, d = f.plane().abcd()
+            abc.print('\n')
 
         return
 
@@ -734,4 +762,11 @@ class Solid:
                     print(e2)
                     print('-----')
 
+    def facelist(self, p: Vertex):
+        fl = []
+        for f in self.faces():
+            for e in f.edges():
+                if e.is_inner_point(p):
+                    fl.append(f)
 
+        return fl

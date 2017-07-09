@@ -3,6 +3,7 @@ from entities import *
 import math
 from line import Line
 
+
 class Plane:
     def __init__(self, *args):
         self.__p = []
@@ -107,6 +108,7 @@ class Plane:
     def abcd(self):
 
         v = Vertex(0, 0, 0)
+        d = 0
         p = self.__p
         p.append(self.__p[0])
         p.append(self.__p[1])
@@ -121,10 +123,9 @@ class Plane:
             k3 = (y2 - y0) * (x1 - x0) - (y1 - y0) * (x2 - x0)
 
             t = Vertex(k1, -k2, k3)
-            t.norm()
             v += t
 
-            d = -k1*x0 + k2*y0 - k3*z0
+            d += -k1*x0 + k2*y0 - k3*z0
 
         return v, d
 
@@ -138,8 +139,10 @@ class Plane:
 
     def intersect_line(self, p):
 
-        a1, b1, c1, d1 = self.abcd()
-        a2, b2, c2, d2 = p.abcd()
+        v, d1 = self.abcd()
+        a1, b1, c1 = v.value()
+        v, d2 = p.abcd()
+        a2, b2, c2 = v.value()
 
         v = Vertex(b1 * c2 - b2 * c1, -(a1 * c2 - a2 * c1), a1 * b2 - a2 * b1)
         det = a1*b2 - a2*b1
@@ -160,13 +163,10 @@ class Plane:
 
     def angle(self, l: Line, p2: Vertex):
 
-        a, b, c, d = self.abcd()
+        v, d = self.abcd()
+        x0, y0, z0 = l.point() + v
 
-        x0 = a + l.point().value('X')
-        y0 = b + l.point().value('Y')
-        z0 = c + l.point().value('Z')
-
-        x1, y1, z1 = p2.value()
+        x1, y1, z1 = p2
 
         l = Line(Vertex(x0, y0, z0), Vertex(x1-x0, y1-y0, z1-z0))
 
@@ -191,54 +191,46 @@ class Plane:
 
     def intersect_point(self, l: Line):
 
+        x1, y1, z1 = l.point().value()
+        l, m, n = l.vector().value()
+
         v, d = self.abcd()
-        v1 = l.vector()
+
         a, b, c = v.value()
 
-        if abs(v.scalar_mult(v1)) < PRECISION:
+        d1 = l*a + m*b + n*c
+
+        if not d1:
             return None
 
-        x0, y0, z0 = l.point().value()
-        dx, dy, dz = l.vector().value()
+        x2 = ((m*b + n*c)*x1 - l*b*y1 - l*c*z1 - l*d)/d1
+        y2 = (-m*a*x1 + (l*a + n*c)*y1 - m*c*z1 - m*d)/d1
+        z2 = (-n*a*x1 - n*b*y1 + (l*a + m*b)*z1 - n*d)/d1
 
-        if dx and dy and dz:
-            y = (a*y0*dx/dy - a*x0 + c*y0*dz/dy - c*z0 - d)/(a*dx/dy + b + c*dz/dy)
-            x = (y-y0)*dx/dy + x0
-            z = (y-y0)*dz/dy + z0
+        return Vertex(x2, y2, z2)
 
-        if not dx and dy and dz:
-            x = x0
-            z = (-a*x0 + z0*b*dy/dz - b*y0 - d)/(b*dy/dz + c)
-            y = (z-z0)*dy/dz + y0
+    def coincide_abcd(self, p: Vertex):
 
-        if dx and not dy and dz:
-            y = y0
-            z = (z0*a*dz/dz - a*x0 - b*y0 - d)/(a*dx/dz + c)
-            x = (z-z0)*dx/dz + x0
+        x0, y0, z0 = p.value()
+        x1, y1, z1 = self.__p[0].value()
+        v, d = self.abcd()
 
-        if dx and dy and not dz:
-            z = z0
-            y = (y0*a*dx/dy - a*x0 - c*z0 - d)/(a*dx/dy + b)
-            x = (y-y0)*dx/dy + x0
+        l, m, n = v.value()
 
-        if not dx and not dy and dz:
-            x = x0
-            y = y0
-            z = -(a*x0 + b*y0 + d)/c
+        if not x0*l + y0*m + z0*n + d:
+            return None
 
-        if not dx and dy and not dz:
-            x = x0
-            z = z0
-            y = -(a * x0 + c * z0 + d) / b
+        d = l*l + m*m + n*n
 
-        if dx and not dy and not dz:
-            y = y0
-            z = z0
-            x = -(b * y0 + c * z0 + d) / a
+        if not d:
+            return None
 
-        if not dx and not dy and not dz:
-            x = x0
-            y = y0
-            z = z0
+        x2 = ((m*m + n*n)*x1 - l*m*y1 - l*n*z1 + l*(l*x0 + m*y0 + n*z0))/d
+        y2 = (-l*m*x1 + (l*l + n*n)*y1 - m*n*z1 + m*(l*x0 + m*y0 + n*z0))/d
+        z2 = (-l*n*x1 - m*n*y1 + (l*l + m*m)*z1 + n*(l*x0 + m*y0 + n*z0))/d
 
-        return Vertex(x, y, z)
+        d0 = self.__p[0].distance(Vertex(x2, y2, z2))
+        d1 = math.sqrt(d)
+        d01 = Vertex(x2, y2, z2).distance(v)
+
+        return not (gt(d01, d0) and gt(d01, d1))
