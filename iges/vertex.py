@@ -94,15 +94,6 @@ class Vertex:
         x, y, z = self.value()
         return Vertex(-x, -y, -z)
 
-    def norm(self):
-        power = self.value('X')*self.value('X')+self.value('Y')*self.value('Y')+self.value('Z')*self.value('Z')
-        norm = math.sqrt(power)
-
-        if norm:
-            self.__coordinates['X'] /= norm
-            self.__coordinates['Y'] /= norm
-            self.__coordinates['Z'] /= norm
-
     def __iter__(self):
         return self
 

@@ -3,6 +3,7 @@ from vertex import Vertex
 from plane import Plane
 from face import Face
 from edge import Edge
+from line import Line
 import math
 
 #filename = 'top-champfer.iges'
@@ -18,5 +19,6 @@ solid_ = Solid(filename, 0)
 #solid_.print()
 #print('-----')
 
+#solid.print()
 solid.refactor()
 solid.run()

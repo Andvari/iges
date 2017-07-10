@@ -737,24 +737,36 @@ class Solid:
     def run(self):
         e1 = []
         e2 = []
+        k = 1
         for i in range(self.size()):
             for j in range(i+1, self.size()):
                 a = self.face(i).hull(self.face(j))
-                print(i, j)
                 if a:
-                    self.face(i).print()
-                    print('---')
-                    self.face(j).print()
-                    print('----')
+                    print(k, i, j, ' ', end="")
+                    k+=1
+                    #self.face(i).print()
+                    #print('---')
+                    #self.face(j).print()
+                    #print('----')
                     print(a)
                     if a == 'Concave':
+                        #self.face(i).print()
+                        #print('-')
+                        #self.face(j).print()
+                        #print('--')
                         l = self.face(i).intersect_line(self.face(j))
-                        l.print()
-                        print('----')
-                        e1 = self.face(i).coincide_edges(l)
-                        e2 = self.face(j).coincide_edges(l)
-                        print(e1)
-                        print(e2)
+                        #l.print()
+                        #print('---')
+                        f1 = Face(self.face(i).edges_along_line(l))
+                        f2 = Face(self.face(j).edges_along_line(l))
+
+                        f1.sort()
+                        f2.sort()
+
+                        for e in f1.edges():
+                            e.print()
+                        for e in f2.edges():
+                            e.print()
                         print('-----')
 
     def facelist(self, p: Vertex):

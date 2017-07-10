@@ -24,6 +24,7 @@ class Edge:
     def point(self, n: int):
         return self.__p[n]
 
+    '''
     def way(self):
         way = []
         if self.__p[0].value('X') < self.__p[1].value('X'):
@@ -39,6 +40,7 @@ class Edge:
         if self.__p[0].value('Z') > self.__p[1].value('Z'):
             way.append(('Z', '-'))
         return way
+    '''
 
     def print(self):
         print("{ ", end="")
@@ -82,12 +84,9 @@ class Edge:
     def reverse(self):
         return Edge(self.__p[1], self.__p[0])
 
-    def equ(self, e):
-        if e.p[0].equ(self.__p[0]) and e.p[1].equ(self.__p[1]):
-            return True
-        if e.p[0].equ(self.__p[1]) and e.p[1].equ(self.__p[0]):
-            return True
-        return False
+    def __eq__(self, e):
+        return (self.point(0) == e.point(0) and self.point(1) == e.point(1)) or \
+               (self.point(0) == e.point(1) and self.point(1) == e.point(0))
 
     def expand(self, way: [], bias: int):
         for c, s in way:
@@ -101,6 +100,7 @@ class Edge:
             self.__p[0].update(c, bias)
             self.__p[1].update(c, bias)
 
+    '''
     def intersect(self, edge, plane):
         empty = Vertex(), ""
 
@@ -209,17 +209,14 @@ class Edge:
             return Vertex(a, self.point(0).value('Y'), b), s
 
         return empty
-
+    '''
+    '''
     def kb(self, a0, b0, a1, b1):
         return
+    '''
 
     def line(self):
-        x0, y0, z0 = self.point(0).value()
-        x1, y1, z1 = self.point(1).value()
-
-        n = Vertex(x0, y0, z0)
-        v = Vertex(x1-x0, y1-y0, z1-z0)
-        return Line(n, v)
+        return Line(self.point(0), self.point(1) - self.point(0))
 
     def middle(self):
         return self.point(0).middle(self.point(1))
@@ -239,13 +236,6 @@ class Edge:
         d01 = self.point(0).distance(self.point(1))
 
         return ge(d01, d0) and ge(d01, d1)
-
-    def is_straight_inner_point(self, p: Vertex):
-        d0 = self.point(0).distance(p)
-        d1 = self.point(1).distance(p)
-        d01 = self.point(0).distance(self.point(1))
-
-        return gt(d01, d0) and gt(d01, d1)
 
     def intersect_point(self, l: Line):
         l1 = Line(self.point(0), self.point(0).vector(self.point(1)))
@@ -288,3 +278,9 @@ class Edge:
         z = p12 * s + z1
 
         return Vertex(x, y, z)
+
+    def dxdydz(self):
+        return self.__p[1] - self.__p[0]
+
+    def coincide(self, e):
+        return self.line().coincide(e.line())

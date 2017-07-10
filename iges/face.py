@@ -54,77 +54,6 @@ class Face:
 
         return True
 
-
-    '''
-    def orientation(self):
-        m = []
-        for edge in self.__edges:
-            c, s = edge.way()[0]
-            m.append(c+s)
-
-        vote_cw = 0
-        vote_ccw = 0
-        a_cw = []
-        a_ccw = []
-        for e in range(len(m)-2):
-            route = m[e+0] + m[(e+1) % len(m)] + m[(e+2) % len(m)]
-            if route == cw['X'][0] or route == cw['X'][1]:
-                vote_cw += 1
-            if route == cw['Y'][0] or route == cw['Y'][1]:
-                vote_cw += 1
-            if route == cw['Z'][0] or route == cw['Z'][1]:
-                vote_cw += 1
-            if route == ccw['X'][0] or route == ccw['X'][1]:
-                vote_ccw += 1
-            if route == ccw['Y'][0] or route == ccw['Y'][1]:
-                vote_ccw += 1
-            if route == ccw['Z'][0] or route == ccw['Z'][1]:
-                vote_ccw += 1
-
-        if vote_cw > vote_ccw:
-            self.orient = ORIENTATION_CW
-        else:
-            self.orient = ORIENTATION_CCW
-
-        return self.orient
-    '''
-
-    '''
-    def anomalies(self):
-
-        if self.orient == ORIENTATION_UNKNOWN:
-            self.orientation()
-
-        m = []
-        for edge in self.__edges:
-            c, s = edge.way()[0]
-            m.append(c+s)
-
-        a_cw = []
-        a_ccw = []
-        for e in range(len(m)-2):
-            route = m[e+0] + m[(e+1)%len(m)]
-
-            if route == acw['X'][0] or route == acw['X'][1] or route == acw['X'][2] or route == acw['X'][3]:
-                a_cw.append((self.__edges[e], self.__edges[e+1]))
-            if route == acw['Y'][0] or route == acw['Y'][1] or route == acw['Y'][2] or route == acw['Y'][3]:
-                a_cw.append((self.__edges[e], self.__edges[e+1]))
-            if route == acw['Z'][0] or route == acw['Z'][1] or route == acw['Z'][2] or route == acw['Z'][3]:
-                a_cw.append((self.__edges[e], self.__edges[e+1]))
-
-            if route == accw['X'][0] or route == accw['X'][1] or route == accw['X'][2] or route == accw['X'][3]:
-                a_ccw.append((self.__edges[e], self.__edges[e+1]))
-            if route == accw['Y'][0] or route == accw['Y'][1] or route == accw['Y'][2] or route == accw['Y'][3]:
-                a_ccw.append((self.__edges[e], self.__edges[e+1]))
-            if route == accw['Z'][0] or route == accw['Z'][1] or route == accw['Z'][2] or route == accw['Z'][3]:
-                a_ccw.append((self.__edges[e], self.__edges[e+1]))
-
-        if self.orient == ORIENTATION_CW:
-            return a_cw
-        else:
-            return a_ccw
-    '''
-
     def plane(self):
         return Plane([self.__edges[0].point(0), self.__edges[0].point(1), self.__edges[1].point(1)])
 
@@ -208,15 +137,6 @@ class Face:
             self.i = 0
             raise StopIteration
 
-    '''
-    def coordinate(self, p):
-        m = -1e6
-        for e in self.__edges:
-            m = max(m, e.point(0).value(p))
-            m = max(m, e.point(1).value(p))
-        return m
-    '''
-
     def intersect(self, face):
         if not self.plane().coincide(face.plane()):
             return []
@@ -264,14 +184,14 @@ class Face:
     def hull(self, f):
         for e in self.edges():
             for ee in f.edges():
-                if e.line().coincide(ee.line()):
-                    if e.point(0) == ee.point(0) or e.point(0) == ee.point(1):
-                        if ee.is_inner_point(1):
-                            l = Line(e.point(0), e.point(1)-e.point(0))
-                            return self.plane().angle(l, f.point_out_of_line(l))
-                        return None
-                    else:
-                        if ee.is_straight_inner_point(1)
+                if e.coincide(ee):
+                    ff = Face([e, ee])
+                    direction = ff.sort()
+                    p11 = ff.edges()[0].point(0).value(direction)
+                    p12 = ff.edges()[0].point(1).value(direction)
+                    p21 = ff.edges()[1].point(0).value(direction)
+                    if p11 <= p21 < p12:
+                        return self.plane().angle(e.line(), f.point_out_of_line(e.line()))
         return None
 
     def intersect_line(self, f):
@@ -284,11 +204,12 @@ class Face:
                 return ip
         return None
 
-    def coincide_edges(self, l: Line):
+    def edges_along_line(self, l: Line):
         edges = []
         for e in self.__edges:
             if e.line().coincide(l):
                 edges.append(e)
+
         return edges
 
     def cross_points(self, l: Line):
@@ -365,3 +286,18 @@ class Face:
     def coincide_abcd(self, p: Vertex):
         return self.plane().coincide_abcd(p)
 
+    def sort(self):
+        sort_direction = 'X'
+        if self.edges()[0].point(0).value('X') == self.edges()[0].point(1).value('X'):
+            sort_direction = 'Y'
+            if self.edges()[0].point(0).value('Y') == self.edges()[0].point(1).value('Y'):
+                sort_direction = 'Z'
+
+        for i in range(len(self.__edges)):
+            e = self.__edges[i]
+            if e.point(0).value(sort_direction) >= e.point(1).value(sort_direction):
+                self.__edges[i] = e.reverse()
+
+        self.edges().sort(key=lambda x: x.point(0).value(sort_direction))
+
+        return sort_direction

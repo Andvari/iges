@@ -150,6 +150,3 @@ class Line:
         print(" }, { ", end="")
         self.__v.print()
         print(" }")
-
-
-

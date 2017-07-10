@@ -33,8 +33,8 @@ class Plane:
         return
 
     def coincide(self, plane):
-        a0, b0, c0, d0 = self.abcd()
-        a1, b1, c1, d1 = plane.abcd()
+        (a0, b0, c0), d0 = self.abcd()
+        (a1, b1, c1), d1 = plane.abcd()
 
         k = []
         if equ(a1, 0):
@@ -71,11 +71,8 @@ class Plane:
         return True
 
     def parallel(self, p):
-        v0, d0 = self.abcd()
-        v1, d1 = p.abcd()
-
-        a0, b0, c0 = v0.value()
-        a1, b1, c1 = v1.value()
+        (a0, b0, c0), d0 = self.abcd()
+        (a1, b1, c1), d1 = p.abcd()
 
         k = []
         if equ(a1, 0):
@@ -139,27 +136,27 @@ class Plane:
 
     def intersect_line(self, p):
 
-        v, d1 = self.abcd()
-        a1, b1, c1 = v
-        v, d2 = p.abcd()
-        a2, b2, c2 = v
+        (a1, b1, c1), d1 = self.abcd()
+        (a2, b2, c2), d2 = p.abcd()
 
         v = Vertex(b1 * c2 - b2 * c1, -(a1 * c2 - a2 * c1), a1 * b2 - a2 * b1)
-        det = a1*b2 - a2*b1
-        if det:
-            n = Vertex((d2*b1 - d1*b2)/det, -(d2*a1 - d1*a2)/det, 0)
-        else:
-            det = a1*c2 - a2*c1
-            if det:
-                n = Vertex((d2 * c1 - d1 * c2) / det, -(d2 * a1 - d1 * a2) / det, 0)
-            else:
-                det = b1*c2 - b2*c1
-                if det:
-                    n = Vertex((d2 * c1 - d1 * c2) / det, -(d2 * b1 - d1 * b2) / det, 0)
-                else:
-                    return None
 
-        return Line(n, v)
+        if abs(a1*b2 - a2*b1):
+            y = (d2 * a1 - d1 * a2) / (b1 * a2 - b2 * a1)
+            x = (d2 * b1 - d1 * b2) / (a1 * b2 - a2 * b1)
+            z = 0
+        elif abs(a1*c2 - a2*c1):
+            z = (d2 * a1 - d1 * a2) / (c1 * a2 - c2 * a1)
+            x = (d2 * c1 - d1 * c2) / (a1 * c2 - a2 * c1)
+            y = 0
+        elif abs(c1*b2 - c2*b1):
+            z = (d2 * b1 - d1 * b2) / (c1 * b2 - c2 * b1)
+            y = (d2 * c1 - d1 * c2) / (b1 * c2 - b2 * c1)
+            x = 0
+        else:
+            return None
+
+        return Line(Vertex(x, y, z), v)
 
     def angle(self, l: Line, p2: Vertex):
 
@@ -185,9 +182,11 @@ class Plane:
 
         return 'Concave'
 
+    '''
     def vector(self):
         a, b, c, d = self.abcd()
         return Vertex(a, b, c)
+    '''
 
     def intersect_point(self, l: Line):
 
