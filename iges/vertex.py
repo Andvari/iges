@@ -111,3 +111,9 @@ class Vertex:
             self.i = 'X'
             raise StopIteration
 
+    def lenght(self):
+        return self.distance(Vertex(0, 0, 0))
+
+    def scale(self, t):
+        x0, y0, z0 = self.value()
+        return Vertex(x0*t, y0*t, z0*t)

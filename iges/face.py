@@ -6,7 +6,7 @@ from vertex import Vertex
 from direction import Direction
 from plane import Plane
 from line import Line
-from entities import equ, ge, gt, le, lt
+#from entities import equ, ge, gt, le, lt
 
 
 class Face:
@@ -137,6 +137,7 @@ class Face:
             self.i = 0
             raise StopIteration
 
+    '''
     def intersect(self, face):
         if not self.plane().coincide(face.plane()):
             return []
@@ -174,6 +175,7 @@ class Face:
                         if exit_flag:
                             break
         return chains
+    '''
 
     def point_out_of_line(self, l: Line):
         for p in self.vertexes():
@@ -186,10 +188,10 @@ class Face:
             for ee in f.edges():
                 if e.coincide(ee):
                     ff = Face([e, ee])
-                    direction = ff.sort()
-                    p11 = ff.edges()[0].point(0).value(direction)
-                    p12 = ff.edges()[0].point(1).value(direction)
-                    p21 = ff.edges()[1].point(0).value(direction)
+                    ff.sort(e.gradient()[0])
+                    p11 = ff.edges()[0].point(0).value(e.gradient()[0])
+                    p12 = ff.edges()[0].point(1).value(e.gradient()[0])
+                    p21 = ff.edges()[1].point(0).value(e.gradient()[0])
                     if p11 <= p21 < p12:
                         return self.plane().angle(e.line(), f.point_out_of_line(e.line()))
         return None
@@ -199,7 +201,7 @@ class Face:
 
     def intersect_point(self, l):
         ip = self.plane().intersect_point(l)
-        if ip:
+        if ip is not None:
             if self.is_inner_point(ip):
                 return ip
         return None
@@ -216,7 +218,7 @@ class Face:
         ip = []
         for e in self.__edges:
             p = e.intersect_point(l)
-            if p:
+            if p is not None:
                 p0, p1 = e.points()
 
                 if p == p0:
@@ -231,7 +233,7 @@ class Face:
                     p0 = p0n
 
                 ppp = Edge(p0, p1).intersect_point(l)
-                if ppp:
+                if ppp is not None:
                     if Edge(p0, p1).is_inner_point(ppp):
                         found = False
                         for pp in ip:
@@ -286,12 +288,7 @@ class Face:
     def coincide_abcd(self, p: Vertex):
         return self.plane().coincide_abcd(p)
 
-    def sort(self):
-        sort_direction = 'X'
-        if self.edges()[0].point(0).value('X') == self.edges()[0].point(1).value('X'):
-            sort_direction = 'Y'
-            if self.edges()[0].point(0).value('Y') == self.edges()[0].point(1).value('Y'):
-                sort_direction = 'Z'
+    def sort(self, sort_direction):
 
         for i in range(len(self.__edges)):
             e = self.__edges[i]
@@ -300,4 +297,52 @@ class Face:
 
         self.edges().sort(key=lambda x: x.point(0).value(sort_direction))
 
-        return sort_direction
+        return
+
+    def abcd(self):
+        return self.plane().abcd()
+
+    def merge(self, face):
+        v, n = self.abcd()
+        for e in self.edges():
+            reduced_edges = []
+            for ee in face.edges():
+                p1 = ee.point(0)
+                p2 = ee.point(1)
+                p = e.intersect_point(ee)
+                if p is not None and e.is_inner_point(p):
+                    if not e.is_inner_point(p1):
+                        if not e.is_inner_point(p2):
+                            reduced_edges.append(Edge(p1, p2))
+                        else:
+                            reduced_edges.append(Edge(p1, p))
+                    else:
+                        if not e.is_inner_point(p2):
+                            reduced_edges.append(Edge(p, p2))
+        f1 = Face(reduced_edges)
+        v1, n1 = f1.abcd()
+        if Edge(v, v1).is_inner_point(Vertex(0, 0, 0)):
+            f1.mirror()
+
+        v, n = face.abcd()
+        for e in face.edges():
+            reduced_edges = []
+            for ee in self.edges():
+                p1 = ee.point(0)
+                p2 = ee.point(1)
+                p = e.intersect_point(ee)
+                if p is not None and e.is_inner_point(p):
+                    if not e.is_inner_point(p1):
+                        if not e.is_inner_point(p2):
+                            reduced_edges.append(Edge(p1, p2))
+                        else:
+                            reduced_edges.append(Edge(p1, p))
+                    else:
+                        if not e.is_inner_point(p2):
+                            reduced_edges.append(Edge(p, p2))
+        f2 = Face(reduced_edges)
+        v1, n1 = f2.abcd()
+        if Edge(v, v1).is_inner_point(Vertex(0, 0, 0)):
+            f2.mirror()
+
+        return Face(f1.edges()+f2.edges())

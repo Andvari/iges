@@ -150,3 +150,17 @@ class Line:
         print(" }, { ", end="")
         self.__v.print()
         print(" }")
+
+    def gradient(self):
+        p1 = self.__n
+        p2 = self.__n + self.__v
+
+        g = []
+        if not p1.value('X') == p2.value('X'):
+            g.append('X')
+        if not p1.value('Y') == p2.value('Y'):
+            g.append('Y')
+        if not p1.value('Z') == p2.value('Z'):
+            g.append('Z')
+
+        return g

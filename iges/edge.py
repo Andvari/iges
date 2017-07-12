@@ -279,8 +279,38 @@ class Edge:
 
         return Vertex(x, y, z)
 
+    def gradient(self):
+        return self.line().gradient()
+
     def dxdydz(self):
         return self.__p[1] - self.__p[0]
 
     def coincide(self, e):
         return self.line().coincide(e.line())
+
+    def intersect_pieces(self, edges: []):
+        g = self.gradient()[0]
+
+        ss = self.point(0).value(g)
+        se = self.point(1).value(g)
+        pieces = []
+        for e in edges:
+            ts = e.point(0).value(g)
+            te = e.point(1).value(g)
+
+            if ss >= te or se <= ts:
+                continue
+
+            if ss >= ts:
+                ns = self.point(0)
+            else:
+                ns = e.point(0)
+
+            if se <= te:
+                ks = self.point(1)
+            else:
+                ks = e.point(1)
+
+            pieces.append(Edge(ns, ks))
+
+        return pieces

@@ -188,6 +188,7 @@ ORIENTATION_UNKNOWN = -1
 
 PRECISION = 1e-6
 
+THICKNESS = 4.
 
 def equ(a, b):
     return abs(a-b) < PRECISION

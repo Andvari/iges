@@ -169,7 +169,7 @@ class Plane:
 
         p = self.intersect_point(l)
 
-        if p:
+        if p is not None:
             x, y, z = p.value()
 
             l1 = Vertex(x0, y0, z0).distance(Vertex(x1, y1, z1))
