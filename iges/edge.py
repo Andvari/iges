@@ -7,9 +7,7 @@ from line import Line
 
 class Edge:
     def __init__(self, start: Vertex, end: Vertex):
-        self.__p = []
-        self.__p.append(start)
-        self.__p.append(end)
+        self.__p = [start, end]
 
     def update(self, *args):
         if len(args) == 2:
@@ -231,14 +229,24 @@ class Edge:
         return None
 
     def is_inner_point(self, p: Vertex):
-        d0 = self.point(0).distance(p)
-        d1 = self.point(1).distance(p)
-        d01 = self.point(0).distance(self.point(1))
+        g = self.gradient()[0]
+        p0, p1 = self.points()
 
-        return ge(d01, d0) and ge(d01, d1)
+        if not self.coincide(Edge(p0, p)):
+            return False
 
-    def intersect_point(self, l: Line):
+        if p.lt(p0.min(p1, g), g) or p.gt(p0.max(p1, g), g):
+            return False
+
+        return True
+
+    def intersect_point(self, param):
         l1 = Line(self.point(0), self.point(0).vector(self.point(1)))
+
+        if type(param) is Edge:
+            l = param.line()
+        else:
+            l = param
 
         x0, y0, z0 = l1.point().value()
         x1, y1, z1 = l.point().value()
@@ -314,3 +322,8 @@ class Edge:
             pieces.append(Edge(ns, ks))
 
         return pieces
+
+    def sorted_along_gradient(self, g):
+        s = min(self.point(0).value(g), self.point(1).value(g))
+        e = max(self.point(0).value(g), self.point(1).value(g))
+        return s, e

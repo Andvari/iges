@@ -214,7 +214,15 @@ class Face:
 
         return edges
 
-    def cross_points(self, l: Line):
+    def cross_points(self, param):
+
+        if type(param) is Edge:
+            l = param.line()
+        elif type(param) is Line:
+            l = param
+        else:
+            print('Type not defined')
+
         ip = []
         for e in self.__edges:
             p = e.intersect_point(l)
@@ -243,6 +251,11 @@ class Face:
                         if not found:
                             ip.append(p)
 
+        if type(param) is Edge:
+            for p in ip:
+                if e.is_inner_point(p):
+                    return p
+            return None
         return ip
 
     def inner_point(self):
@@ -303,46 +316,65 @@ class Face:
         return self.plane().abcd()
 
     def merge(self, face):
+        nf1 = Face()
         v, n = self.abcd()
         for e in self.edges():
-            reduced_edges = []
-            for ee in face.edges():
-                p1 = ee.point(0)
-                p2 = ee.point(1)
-                p = e.intersect_point(ee)
-                if p is not None and e.is_inner_point(p):
-                    if not e.is_inner_point(p1):
-                        if not e.is_inner_point(p2):
-                            reduced_edges.append(Edge(p1, p2))
-                        else:
-                            reduced_edges.append(Edge(p1, p))
-                    else:
-                        if not e.is_inner_point(p2):
-                            reduced_edges.append(Edge(p, p2))
-        f1 = Face(reduced_edges)
-        v1, n1 = f1.abcd()
-        if Edge(v, v1).is_inner_point(Vertex(0, 0, 0)):
-            f1.mirror()
+            p0, p1 = e.points()
+            if face.is_inner_point(p0) and face.is_inner_point(p1):
+                continue
 
+            if not face.is_inner_point(p0) and not face.is_inner_point(p1):
+                nf1.append(e)
+                continue
+
+            cp = face.cross_points(e)
+
+            if type(cp) is Vertex:
+                face.print()
+                e.print()
+                cp.print(' cp\n')
+                if not face.is_inner_point(p0):
+                    nf1.append(Edge(p0, cp))
+                    continue
+
+                if not face.is_inner_point(p1):
+                    nf1.append(Edge(cp, p1))
+
+        nf2 = Face()
         v, n = face.abcd()
         for e in face.edges():
-            reduced_edges = []
-            for ee in self.edges():
-                p1 = ee.point(0)
-                p2 = ee.point(1)
-                p = e.intersect_point(ee)
-                if p is not None and e.is_inner_point(p):
-                    if not e.is_inner_point(p1):
-                        if not e.is_inner_point(p2):
-                            reduced_edges.append(Edge(p1, p2))
-                        else:
-                            reduced_edges.append(Edge(p1, p))
-                    else:
-                        if not e.is_inner_point(p2):
-                            reduced_edges.append(Edge(p, p2))
-        f2 = Face(reduced_edges)
-        v1, n1 = f2.abcd()
-        if Edge(v, v1).is_inner_point(Vertex(0, 0, 0)):
-            f2.mirror()
+            g = e.gradient()[0]
+            p0, p1 = e.points()
+            if self.is_inner_point(p0) and self.is_inner_point(p1):
+                continue
 
-        return Face(f1.edges()+f2.edges())
+            if not self.is_inner_point(p0) and not self.is_inner_point(p1):
+                nf2.append(e)
+                continue
+
+            cp = self.cross_points(e)
+
+            if type(cp) is Vertex:
+                #self.print()
+                #e.print()
+                #cp.print(' cp\n')
+                if not self.is_inner_point(p0):
+                    nf2.append(Edge(p0, cp))
+                    continue
+
+                if not self.is_inner_point(p1):
+                    nf2.append(Edge(cp, p1))
+
+        v, n = self.abcd()
+        vv, n = nf2.abcd()
+        if Edge(v, vv).is_inner_point(Vertex(0, 0, 0)):
+            nf2.mirror()
+
+        print('-')
+        for e in nf1:
+            e.print()
+        print('--')
+        for e in nf2:
+            e.print()
+        print('---')
+        return nf1

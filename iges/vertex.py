@@ -117,3 +117,33 @@ class Vertex:
     def scale(self, t):
         x0, y0, z0 = self.value()
         return Vertex(x0*t, y0*t, z0*t)
+
+    def ge(self, p, g):
+        return self.value(g) >= p.value(g)
+
+    def gt(self, p, g):
+        return self.value(g) > p.value(g)
+
+    def lt(self, p, g):
+        return self.value(g) < p.value(g)
+
+    def le(self, p, g):
+        return self.value(g) <= p.value(g)
+
+    def equ(self, p, g):
+        return self.value(g) == p.value(g)
+
+    def min(self, p, g):
+        if self.lt(p, g):
+            return self
+        return p
+
+    def max(self, p, g):
+        if self.gt(p, g):
+            return self
+        return p
+
+    def minmax(self, p, g):
+        if self.lt(p, g):
+            return self, p
+        return p, self
