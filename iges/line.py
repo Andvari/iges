@@ -1,27 +1,48 @@
-from vertex import Vertex
+from point import Point
+#from vertex import Vertex
+from radius_vector import RadiusVector
 
 
 class Line:
     def __init__(self, *args):
 
-        if len(args) == 0:
-            self.__n = Vertex()
-            self.__v = Vertex()
-            return
+        if args:
+            if type(args[0]) is Point:
+                a = args[0]
+            else:
+                raise ValueError('Line __init__(): args[0] is not Point')
 
-        self.__n, self.__v = (args[0], args[1])
+            if type(args[1]) is Point or type(args[1]) is RadiusVector:
+                b = args[1]
+            else:
+                raise ValueError('Line: args[1] is not Point or RadiusVector')
+
+        self._p = [a, b]
+        return
 
     def point(self):
-        return self.__n
+        return self._p[0]
 
     def vector(self):
-        return self.__v
+        if type(self._p[1]) is Point:
+            return self[1] - self[0]
+        return self[1]
 
+    def __getitem__(self, item):
+        return self._p[item]
+
+    def __setitem__(self, key, value):
+        raise ValueError('Line __setitem__(): operation not permitted')
+
+    def __delitem__(self, key):
+        raise ValueError('Line __delitem__(): operation not permitted')
+
+    '''
     def belong(self, p: Vertex):
 
-        x, y, z = p.value()
-        x0, y0, z0 = self.point().value()
-        dx, dy, dz = self.vector().value()
+        x, y, z = p
+        x0, y0, z0 = self.point()
+        dx, dy, dz = self.vector()
 
         if dx and dy and dz:
             if (x-x0)/dx == (y-y0)/dy and (y-y0)/dy == (z-z0)/dz:
@@ -70,13 +91,14 @@ class Line:
                 return True
             else:
                 return False
+    '''
 
     def coincide(self, l):
 
         x0, y0, z0 = self.point()
         dx, dy, dz = self.vector()
         xs, ys, zs = l.point()
-        xf, yf, zf = l.point() + l.vector()
+        xf, yf, zf = l.vector() + l.point()
 
         if dx and dy and dz:
             if not (xs - x0)/dx == (ys - y0)/dy or not (ys - y0)/dy == (zs - z0)/dz:
@@ -144,23 +166,19 @@ class Line:
 
         return True
 
-    def print(self):
-        print("{ ", end="")
-        self.__n.print()
-        print(" }, { ", end="")
-        self.__v.print()
-        print(" }")
-
     def gradient(self):
-        p1 = self.__n
-        p2 = self.__n + self.__v
-
         g = []
-        if not p1.value('X') == p2.value('X'):
-            g.append('X')
-        if not p1.value('Y') == p2.value('Y'):
-            g.append('Y')
-        if not p1.value('Z') == p2.value('Z'):
-            g.append('Z')
+        if self.vector()[0]:
+            g.append(0)
+        if self.vector()[1]:
+            g.append(1)
+        if self.vector()[2]:
+            g.append(2)
 
         return g
+
+    def __str__(self):
+        if type(self[1]) is Point:
+            return str(self[0]) + ', ' + str(self[1] - self[0])
+        else:
+            return str(self[0]) + ', ' + str(self[1])

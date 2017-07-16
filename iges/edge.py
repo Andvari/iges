@@ -1,12 +1,11 @@
-from vertex import Vertex
-from direction import Direction
 from plane import Plane
 from entities import equ, ge, gt, le, lt, inside
 from line import Line
+from point import Point
 
 
 class Edge:
-    def __init__(self, start: Vertex, end: Vertex):
+    def __init__(self, start: Point, end: Point):
         self.__p = [start, end]
 
     def update(self, *args):
@@ -16,36 +15,20 @@ class Edge:
 
         self.__p[args[0]].update(args[1], args[2])
 
-    def points(self):
-        return self.__p[0], self.__p[1]
+    def __getitem__(self, item):
+        return self.__p[item]
 
-    def point(self, n: int):
-        return self.__p[n]
+    def __setitem__(self, key, value):
+        self.__p[key] = value
 
-    '''
-    def way(self):
-        way = []
-        if self.__p[0].value('X') < self.__p[1].value('X'):
-            way.append(('X', '+'))
-        if self.__p[0].value('Y') < self.__p[1].value('Y'):
-            way.append(('Y', '+'))
-        if self.__p[0].value('Z') < self.__p[1].value('Z'):
-            way.append(('Z', '+'))
-        if self.__p[0].value('X') > self.__p[1].value('X'):
-            way.append(('X', '-'))
-        if self.__p[0].value('Y') > self.__p[1].value('Y'):
-            way.append(('Y', '-'))
-        if self.__p[0].value('Z') > self.__p[1].value('Z'):
-            way.append(('Z', '-'))
-        return way
-    '''
+    def __delitem__(self, key):
+        pass
 
-    def print(self):
-        print("{ ", end="")
-        self.__p[0].print()
-        print(" }, { ", end="")
-        self.__p[1].print()
-        print(" }")
+    def __str__(self):
+        l = 6 - len(str(self.__p[0])) % 6
+        s = ' '*2 + str(self.__p[0]) + ',' + ' '*l
+        s += str(self.__p[1])
+        return s
 
     def image(self, p: Plane):
         x0 = 0
@@ -214,45 +197,54 @@ class Edge:
     '''
 
     def line(self):
-        return Line(self.point(0), self.point(1) - self.point(0))
+        return Line(self[0], self[1])
 
     def middle(self):
-        return self.point(0).middle(self.point(1))
+        return self[0].middle(self[1])
 
     def opposite_vertex(self, p):
-        if self.point(0) == p:
-            return self.point(1)
+        if self[0] == p:
+            return self[1]
 
-        if self.point(1) == p:
-            return self.point(0)
+        if self[1] == p:
+            return self[0]
 
         return None
 
-    def is_inner_point(self, p: Vertex):
+    def is_inner_point(self, p: Point):
         g = self.gradient()[0]
-        p0, p1 = self.points()
+        p0, p1 = self
 
         if not self.coincide(Edge(p0, p)):
             return False
 
-        if p.lt(p0.min(p1, g), g) or p.gt(p0.max(p1, g), g):
+        if (p[g] < p0[g] and p[g] < p1[g]) or (p[g] > p0[g] and p[g] > p1[g]):
             return False
 
         return True
 
     def intersect_point(self, param):
-        l1 = Line(self.point(0), self.point(0).vector(self.point(1)))
+        #l1 = Line(self.point(0), self.point(1).vector(self.point(1)))
 
         if type(param) is Edge:
             l = param.line()
-        else:
+        elif type(param) is Line:
             l = param
+        else:
+            raise ValueError('Edge intersect_point(): param not Edge or Line')
 
-        x0, y0, z0 = l1.point().value()
-        x1, y1, z1 = l.point().value()
+        x0, y0, z0 = self.line().point()
+        x1, y1, z1 = l.point()
 
-        p00, p01, p02 = l1.vector().value()
-        p10, p11, p12 = l.vector().value()
+        p00, p01, p02 = self.line().vector()
+        p10, p11, p12 = l.vector()
+
+        '''
+        print(self.line().point(), end ="")
+        print(self.line().vector())
+        print(l.point(), end="")
+        print(l.vector())
+        '''
 
         if p00:
             if p01*p10/p00 - p11:
@@ -285,7 +277,10 @@ class Edge:
         y = p11 * s + y1
         z = p12 * s + z1
 
-        return Vertex(x, y, z)
+        #print(Point(x, y, z))
+        #print('---')
+
+        return Point(x, y, z)
 
     def gradient(self):
         return self.line().gradient()
@@ -327,3 +322,8 @@ class Edge:
         s = min(self.point(0).value(g), self.point(1).value(g))
         e = max(self.point(0).value(g), self.point(1).value(g))
         return s, e
+
+    def middle(self):
+        p0 = self.__p[0]
+        p1 = self.__p[1]
+        return Point((p1['X'] - p0['X']) / 2, (p1['Y'] - p0['Y']) / 2, (p1['Z'] - p0['Z']) / 2)

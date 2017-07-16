@@ -1,13 +1,13 @@
-from vertex import Vertex
+#from vertex import Vertex
 from edge import Edge
 from face import Face
-from direction import Direction
 from entities import *
 from plane import Plane
 
 import os
 import sys
 from line import Line
+from point import Point
 
 
 class Solid:
@@ -435,16 +435,16 @@ class Solid:
 
         if entity[etn] == "Line":
             if e['Form Number'] == '0':
-                p1 = Vertex(float(format(float(pd[2]), '.4f')),
+                p1 = Point(float(format(float(pd[2]), '.4f')),
                             float(format(float(pd[3]), '.4f')),
                             float(format(float(pd[4]), '.4f')))
-                p2 = Vertex(float(format(float(pd[5]), '.4f')),
+                p2 = Point(float(format(float(pd[5]), '.4f')),
                             float(format(float(pd[6]), '.4f')),
                             float(format(float(pd[7]), '.4f')))
                 self.prefix(l + 1)
                 print("   ", "Form: ", e['Form Number'], sep="")
                 self.prefix(l + 1)
-                print("   ", p1.value(), p2.value(), sep="")
+                print("   ", p1, p2, sep="")
             else:
                 self.prefix(l + 1)
                 print("   ", "Not implemented yet")
@@ -581,11 +581,13 @@ class Solid:
 
         return Face()
 
+    '''
     def expand(self, face: Face, edge: Edge, way: Direction, d: int):
         for f in self.__faces:
             if f.equ(face):
                 f.expand(edge, way, d)
                 break
+    '''
 
     def faces(self):
         return self.__faces
@@ -654,16 +656,11 @@ class Solid:
         for face in to_append:
             self.__faces.append(face)
 
-    def print(self, *args):
-
-        if len(args) == 0:
-            for i in range(self.size()):
-                print(i)
-                self.face(i).print()
-                print("------")
-            return
-
-        self.__faces[args[0]].print()
+    def __str__(self):
+        s = 'Solid:\n'
+        for f in self.__faces:
+            s += ' '*2 + str(f) + '\n'
+        return s[:-1]
 
     def refactor(self):
 
@@ -673,9 +670,15 @@ class Solid:
             l = Line(ip, abc)
 
             p = []
+            k=1
             for ff in self.__faces:
+                print(k)
+                print(l)
+                print(ff)
+                k += 1
                 fp = ff.intersect_point(l)
                 if fp is not None:
+                    print(fp)
                     found = False
                     for pp in p:
                         if pp == fp:
@@ -684,13 +687,17 @@ class Solid:
                     if not found:
                         p.append(fp)
 
-            if p:
-                if not p[0].value('X') == p[1].value('X'):
-                    p.sort(key=lambda x: x.value('X'))
-                elif not p[0].value('Y') == p[1].value('Y'):
-                    p.sort(key=lambda x: x.value('Y'))
+            print(p)
+            if p is not None:
+                if not p[0][0] == p[1][0]:
+                    p.sort(key=lambda x: x[0])
+                elif not p[0][1] == p[1][1]:
+                    p.sort(key=lambda x: x[1])
                 else:
-                    p.sort(key=lambda x: x.value('Z'))
+                    p.sort(key=lambda x: x[2])
+
+            for pp in p:
+                print(pp)
 
             ins = True
             for i in range(1, len(p)-1):
@@ -711,6 +718,10 @@ class Solid:
                     p.remove(p[i])
 
                 ins = not ins
+
+            print('gg')
+            for pp in p:
+                print(pp)
 
             r = True
             for i in range(len(p)):
@@ -744,7 +755,7 @@ class Solid:
 
         return cf
 
-    def facelist(self, p: Vertex):
+    def facelist(self, p: Point):
         fl = []
         for f in self.faces():
             for e in f.edges():

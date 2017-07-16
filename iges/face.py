@@ -2,11 +2,11 @@ from edge import Edge
 from entities import cw, ccw, acw, accw
 from entities import ORIENTATION_CW, ORIENTATION_CCW, ORIENTATION_UNKNOWN
 from image import Image
-from vertex import Vertex
-from direction import Direction
 from plane import Plane
+from point import Point
 from line import Line
 #from entities import equ, ge, gt, le, lt
+from vector import Vector
 
 
 class Face:
@@ -29,12 +29,6 @@ class Face:
     def edges(self):
         return self.__edges
 
-    def vertexes(self):
-        r = []
-        for e in self.__edges:
-            r.append(e.point(0))
-        return r
-
     def size(self):
         return len(self.__edges)
 
@@ -54,8 +48,23 @@ class Face:
 
         return True
 
+    def __getitem__(self, item):
+        return self.__edges[item]
+
+    def __len__(self):
+        return len(self.__edges)
+
+    def __setitem__(self, key, value):
+        if type(value) is Edge:
+            self.__p[key] = value
+        else:
+            raise ValueError('Face __setitem__(): value is not Edge')
+
+    def __delitem__(self, key):
+        pass
+
     def plane(self):
-        return Plane([self.__edges[0].point(0), self.__edges[0].point(1), self.__edges[1].point(1)])
+        return Plane([self.__edges[0][0], self.__edges[0][1], self.__edges[1][1]])
 
     def mirror(self):
         ne = []
@@ -63,12 +72,12 @@ class Face:
             ne.append(e.reverse())
         self.__edges = list(reversed(ne))
 
-    def print(self, *args):
-        if len(args) == 0:
-            for e in self.__edges:
-                e.print()
-            return
-        self.__edges[args[0]].print()
+    def __str__(self):
+        #s = ' '*2 + 'Face:\n'
+        s = 'Face:\n'
+        for e in self.__edges:
+            s += ' '*2 + 'Edge: ' + str(e) + '\n'
+        return s[:-1]
 
     def image(self, p):
         img = []
@@ -77,23 +86,6 @@ class Face:
         return Image(img)
 
     '''
-    def equ(self, face):
-        if len(self.__edges) != len(face.edges()):
-            return False
-
-        n = 0
-        for i in range(len(self.edges())):
-            for j in range(len(face.edges())):
-                if self.edges()[i].equ(face.edges()[j]):
-                    n += 1
-                    break
-
-        if n == len(self.__edges):
-            return True
-
-        return False
-    '''
-
     def expand(self, edge: Edge, way: Direction, d: int):
         if len(self.__edges) == 0:
             return
@@ -125,6 +117,7 @@ class Face:
                 self.__edges[(idx - 1) % len(self.__edges)].update(1, c, d)
                 self.__edges[(idx - 1) % len(self.__edges)].update(0, c, d)
                 self.__edges[(idx - 2) % len(self.__edges)].update(1, c, d)
+    '''
 
     def __iter__(self):
         return self
@@ -200,10 +193,20 @@ class Face:
         return self.plane().intersect_line(f.plane())
 
     def intersect_point(self, l):
-        ip = self.plane().intersect_point(l)
-        if ip is not None:
-            if self.is_inner_point(ip):
-                return ip
+
+        if type(l) is Line:
+            ip = self.plane().intersect_point(l)
+            if ip is not None:
+                if self.is_inner_point(ip):
+                    return ip
+        elif type(l) is Edge:
+            ip = self.plane().intersect_point(l.line())
+            if ip is not None:
+                if self.is_inner_point(ip) and l.is_inner_point(ip):
+                    return ip
+        else:
+            raise ValueError('Face intersect_point() l not Line or Edge')
+
         return None
 
     def edges_along_line(self, l: Line):
@@ -221,13 +224,13 @@ class Face:
         elif type(param) is Line:
             l = param
         else:
-            print('Type not defined')
+            raise ValueError('Face cross_points(): param not Edge not Line')
 
         ip = []
-        for e in self.__edges:
+        for e in self:
             p = e.intersect_point(l)
             if p is not None:
-                p0, p1 = e.points()
+                p0, p1 = e
 
                 if p == p0:
                     e1, e2 = self.edges_with_common_vertex(p0)
@@ -253,52 +256,54 @@ class Face:
 
         if type(param) is Edge:
             for p in ip:
-                if e.is_inner_point(p):
+                if param.is_inner_point(p):
                     return p
             return None
         return ip
 
     def inner_point(self):
-        p0 = self.vertexes()[0]
-        if self.size() == 3:
-            p1 = self.vertexes()[1].middle(self.vertexes()[2])
-        else:
-            p1 = max(self.vertexes(), key=lambda x: x.distance(p0))
-
-        ip = self.cross_points(Line(p0, p0.vector(p1)))
+        p0 = self[0][0]
+        p1 = self[len(self)-1][0].middle(self[0][1])
+        ip = self.cross_points(Line(p0, p1))
         t0 = min(ip, key=lambda x: x.distance(ip[0]))
         ip.remove(t0)
         t1 = min(ip, key=lambda x: x.distance(ip[0]))
-
         return t0.middle(t1)
 
-    def edges_with_common_vertex(self, p: Vertex):
+    def edges_with_common_vertex(self, p: Point):
         ee = []
         for e in self.__edges:
-            if e.point(0) == p or e.point(1) == p:
+            if e[0] == p or e[1] == p:
                 ee.append(e)
         return ee[0], ee[1]
 
-    def is_inner_point(self, p: Vertex):
-        p0 = self.vertexes()[0]
-        if p == p0:
-            p0 = max(self.vertexes(), key=lambda x: x.distance(p0))
+    def is_inner_point(self, p):
 
-        ip = self.cross_points(Line(p0, p0.vector(p)))
-        ip.sort(key=lambda x: x.distance(p0))
+        if type(p) is Point:
+            p0 = self[0][0]
+            if p == p0:
+                e = max(self.__edges, key=lambda x: x[0].distance(p0))
+                p0 = e[0]
 
-        if ip:
-            r = True
-            for i in range(1, len(ip)):
-                if Edge(ip[i-1], ip[i]).is_inner_point(p):
-                    break
-                r = not r
+            ip = self.cross_points(Line(p0, p))
+            ip.sort(key=lambda x: x.distance(p0))
+            for p in ip:
+                print(p)
 
-            return r
+            if ip:
+                r = True
+                for i in range(1, len(ip)):
+                    if Edge(ip[i-1], ip[i]).is_inner_point(p):
+                        break
+                    r = not r
+
+                return r
+        else:
+            raise ValueError('Face is_inner_point(): p is not Point')
 
         return False
 
-    def coincide_abcd(self, p: Vertex):
+    def coincide_abcd(self, p: Point):
         return self.plane().coincide_abcd(p)
 
     def sort(self, sort_direction):

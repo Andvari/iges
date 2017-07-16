@@ -1,7 +1,8 @@
-from vertex import Vertex
 from entities import *
 import math
 from line import Line
+from point import Point
+from radius_vector import RadiusVector
 
 
 class Plane:
@@ -9,21 +10,21 @@ class Plane:
         self.__p = []
 
         if args[0] == 'XY':
-            self.__p.append(Vertex(0, 0, 0))
-            self.__p.append(Vertex(1, 0, 0))
-            self.__p.append(Vertex(0, 1, 0))
+            self.__p.append(Point(0, 0, 0))
+            self.__p.append(Point(1, 0, 0))
+            self.__p.append(Point(0, 1, 0))
             return
 
         if args[0] == 'YZ':
-            self.__p.append(Vertex(0, 0, 0))
-            self.__p.append(Vertex(0, 1, 0))
-            self.__p.append(Vertex(0, 0, 1))
+            self.__p.append(Point(0, 0, 0))
+            self.__p.append(Point(0, 1, 0))
+            self.__p.append(Point(0, 0, 1))
             return
 
         if args[0] == 'XZ':
-            self.__p.append(Vertex(0, 0, 0))
-            self.__p.append(Vertex(1, 0, 0))
-            self.__p.append(Vertex(0, 0, 1))
+            self.__p.append(Point(0, 0, 0))
+            self.__p.append(Point(1, 0, 0))
+            self.__p.append(Point(0, 0, 1))
             return
 
         if len(args[0]) == 3:
@@ -104,23 +105,23 @@ class Plane:
 
     def abcd(self):
 
-        v = Vertex(0, 0, 0)
+        v = RadiusVector(Point(0, 0, 0))
         d = 0
         p = self.__p
         p.append(self.__p[0])
         p.append(self.__p[1])
 
         for i in range(1, len(p)-1):
-            x0, y0, z0 = p[i-1].value()
-            x1, y1, z1 = p[i].value()
-            x2, y2, z2 = p[i+1].value()
+            x0, y0, z0 = p[i-1]
+            x1, y1, z1 = p[i]
+            x2, y2, z2 = p[i+1]
 
             k1 = (z2 - z0) * (y1 - y0) - (z1 - z0) * (y2 - y0)
             k2 = (z2 - z0) * (x1 - x0) - (z1 - z0) * (x2 - x0)
             k3 = (y2 - y0) * (x1 - x0) - (y1 - y0) * (x2 - x0)
 
-            t = Vertex(k1, -k2, k3)
-            v += t
+            t = Point(k1, -k2, k3)
+            v += RadiusVector(t)
 
             d += -k1*x0 + k2*y0 - k3*z0
 
@@ -139,7 +140,7 @@ class Plane:
         (a1, b1, c1), d1 = self.abcd()
         (a2, b2, c2), d2 = p.abcd()
 
-        v = Vertex(b1 * c2 - b2 * c1, -(a1 * c2 - a2 * c1), a1 * b2 - a2 * b1)
+        v = Point(b1 * c2 - b2 * c1, -(a1 * c2 - a2 * c1), a1 * b2 - a2 * b1)
 
         if abs(a1*b2 - a2*b1):
             y = (d2 * a1 - d1 * a2) / (b1 * a2 - b2 * a1)
@@ -156,24 +157,24 @@ class Plane:
         else:
             return None
 
-        return Line(Vertex(x, y, z), v)
+        return Line(Point(x, y, z), v)
 
-    def angle(self, l: Line, p2: Vertex):
+    def angle(self, l: Line, p2: Point):
 
         v, d = self.abcd()
         x0, y0, z0 = l.point() + v
 
         x1, y1, z1 = p2
 
-        l = Line(Vertex(x0, y0, z0), Vertex(x1-x0, y1-y0, z1-z0))
+        l = Line(Point(x0, y0, z0), Point(x1-x0, y1-y0, z1-z0))
 
         p = self.intersect_point(l)
 
         if p is not None:
             x, y, z = p.value()
 
-            l1 = Vertex(x0, y0, z0).distance(Vertex(x1, y1, z1))
-            l2 = Vertex(x0, y0, z0).distance(Vertex(x, y, z))
+            l1 = Point(x0, y0, z0).distance(Point(x1, y1, z1))
+            l2 = Point(x0, y0, z0).distance(Point(x, y, z))
 
             if l1 > l2:
                 return 'Concave'
@@ -185,17 +186,15 @@ class Plane:
     '''
     def vector(self):
         a, b, c, d = self.abcd()
-        return Vertex(a, b, c)
+        return Point(a, b, c)
     '''
 
     def intersect_point(self, l: Line):
 
-        x1, y1, z1 = l.point().value()
-        l, m, n = l.vector().value()
+        x1, y1, z1 = l.point()
+        l, m, n = l.vector()
 
-        v, d = self.abcd()
-
-        a, b, c = v.value()
+        (a, b, c), d = self.abcd()
 
         d1 = l*a + m*b + n*c
 
@@ -206,15 +205,15 @@ class Plane:
         y2 = (-m*a*x1 + (l*a + n*c)*y1 - m*c*z1 - m*d)/d1
         z2 = (-n*a*x1 - n*b*y1 + (l*a + m*b)*z1 - n*d)/d1
 
-        return Vertex(x2, y2, z2)
+        return Point(x2, y2, z2)
 
-    def coincide_abcd(self, p: Vertex):
+    def coincide_abcd(self, p: Point):
 
-        x0, y0, z0 = p.value()
-        x1, y1, z1 = self.__p[0].value()
+        x0, y0, z0 = p
+        x1, y1, z1 = self.__p[0]
         v, d = self.abcd()
 
-        l, m, n = v.value()
+        l, m, n = v
 
         if not x0*l + y0*m + z0*n + d:
             return None
@@ -228,8 +227,8 @@ class Plane:
         y2 = (-l*m*x1 + (l*l + n*n)*y1 - m*n*z1 + m*(l*x0 + m*y0 + n*z0))/d
         z2 = (-l*n*x1 - m*n*y1 + (l*l + m*m)*z1 + n*(l*x0 + m*y0 + n*z0))/d
 
-        d0 = self.__p[0].distance(Vertex(x2, y2, z2))
+        d0 = self.__p[0].distance(Point(x2, y2, z2))
         d1 = math.sqrt(d)
-        d01 = Vertex(x2, y2, z2).distance(v)
+        d01 = Point(x2, y2, z2).distance(v)
 
         return not (gt(d01, d0) and gt(d01, d1))

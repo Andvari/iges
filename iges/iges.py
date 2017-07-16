@@ -1,5 +1,4 @@
 from solid import Solid
-from vertex import Vertex
 from plane import Plane
 from face import Face
 from edge import Edge
@@ -8,12 +7,14 @@ import math
 import copy
 
 from entities import THICKNESS
+from point import Point
+from vector import Vector
 
 #filename = 'top-champfer.iges'
 #filename = 'cube.IGS'
 #filename = 'cube_fc.iges'
-#filename = 'g-part.IGS'
-filename = 'pyram.IGS'
+filename = 'g-part.IGS'
+#filename = 'pyram.IGS'
 
 solid = Solid(filename, 0)
 solid_ = Solid(filename, 0)
@@ -25,6 +26,7 @@ solid_ = Solid(filename, 0)
 #solid.print()
 solid.refactor()
 
+exit()
 cf = solid.concave_faces()
 to_merge = []
 for f1, f2 in cf:

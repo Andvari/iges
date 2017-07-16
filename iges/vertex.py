@@ -1,149 +1,15 @@
+'''
 from entities import equ
 import math
+from point import Point
 
 
-class Vertex:
+class Vertex(Point):
     def __init__(self, *args):
-        self.i = 'X'
-
-        if len(args) == 0:
-            self.__coordinates = {}
-            return
-
-        self.__coordinates = {'X': args[0], 'Y': args[1], 'Z': args[2]}
-
-    def update(self, *args):
-
-        if len(args) == 1:
-            self.__coordinates['X'] = args[0].value('X')
-            self.__coordinates['Y'] = args[0].value('Y')
-            self.__coordinates['Z'] = args[0].value('Z')
-            return
-
-        self.__coordinates[args[0]] += args[1]
-
-    def value(self, *args):
-        if len(args) == 0:
-            return self.__coordinates['X'], self.__coordinates['Y'], self.__coordinates['Z']
-
-        if len(args) == 1:
-            return self.__coordinates[args[0]]
-
-        v = []
-        for a in args:
-            v.append(self.__coordinates[a])
-
-        return v
+        Point.__init__(self, *args)
 
     def __eq__(self, p):
-        x0, y0, z0 = self.value()
-        x1, y1, z1 = p.value()
+        x0, y0, z0 = self
+        x1, y1, z1 = p
         return equ(x0, x1) and equ(y0, y1) and equ(z0, z1)
-
-    def print(self, *args):
-        e = ""
-        if len(args):
-            e = args[0]
-        print(self.__coordinates['X'], self.__coordinates['Y'], self.__coordinates['Z'], ', ', end=e)
-
-    def distance(self, p):
-        x0, y0, z0 = self.value()
-        x1, y1, z1 = p.value()
-
-        return math.sqrt((x1-x0)*(x1-x0)+(y1-y0)*(y1-y0)+(z1-z0)*(z1-z0))
-
-    def vect_mult(self, p):
-        x0, y0, z0 = self.value()
-        x1, y1, z1 = p.value()
-
-        x = y0 * z1 - y1 * z0
-        y = -x0 * z1 + x1 * z0
-        z = x0 * y1 - x1 * y0
-
-        return Vertex(x, y, z)
-
-    def scalar_mult(self, p):
-        x0, y0, z0 = self.value()
-        x1, y1, z1 = p.value()
-
-        return x0 * x1 + y0 * y1 + z0 * z1
-
-    def vector(self, p):
-        x0, y0, z0 = self.value()
-        x1, y1, z1 = p.value()
-
-        return Vertex(x1-x0, y1-y0, z1-z0)
-
-    def middle(self, p):
-        x0, y0, z0 = self.value()
-        x1, y1, z1 = p.value()
-
-        return Vertex((x0+x1)/2, (y0+y1)/2, (z0+z1)/2)
-
-    def __add__(self, p):
-        x0, y0, z0 = self.value()
-        x1, y1, z1 = p.value()
-        return Vertex(x0+x1, y0+y1, z0+z1)
-
-    def __sub__(self, p):
-        x0, y0, z0 = self.value()
-        x1, y1, z1 = p.value()
-        return Vertex(x1-x0, y1-y0, z1-z0)
-
-    def __neg__(self):
-        x, y, z = self.value()
-        return Vertex(-x, -y, -z)
-
-    def __iter__(self):
-        return self
-
-    def __next__(self):
-        if self.i == 'X':
-            self.i = 'Y'
-            return self.__coordinates['X']
-        elif self.i == 'Y':
-            self.i = 'Z'
-            return self.__coordinates['Y']
-        elif self.i == 'Z':
-            self.i = 'T'
-            return self.__coordinates['Z']
-        else:
-            self.i = 'X'
-            raise StopIteration
-
-    def lenght(self):
-        return self.distance(Vertex(0, 0, 0))
-
-    def scale(self, t):
-        x0, y0, z0 = self.value()
-        return Vertex(x0*t, y0*t, z0*t)
-
-    def ge(self, p, g):
-        return self.value(g) >= p.value(g)
-
-    def gt(self, p, g):
-        return self.value(g) > p.value(g)
-
-    def lt(self, p, g):
-        return self.value(g) < p.value(g)
-
-    def le(self, p, g):
-        return self.value(g) <= p.value(g)
-
-    def equ(self, p, g):
-        return self.value(g) == p.value(g)
-
-    def min(self, p, g):
-        if self.lt(p, g):
-            return self
-        return p
-
-    def max(self, p, g):
-        if self.gt(p, g):
-            return self
-        return p
-
-    def minmax(self, p, g):
-        if self.lt(p, g):
-            return self, p
-        return p, self
+'''
