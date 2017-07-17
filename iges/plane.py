@@ -7,31 +7,64 @@ from radius_vector import RadiusVector
 
 class Plane:
     def __init__(self, *args):
-        self.__p = []
+        assert type(args[0]) is Point or Line, 'Plane __init__(): args[0] is not Point or Line'
+        assert type(args[1]) is Point or Line, 'Plane __init__(): args[1] is not Point or Line'
 
-        if args[0] == 'XY':
-            self.__p.append(Point(0, 0, 0))
-            self.__p.append(Point(1, 0, 0))
-            self.__p.append(Point(0, 1, 0))
-            return
+        if len(args) == 3:
+            assert type(args[0]) is Point and\
+                   type(args[1]) is Point and\
+                   type(args[2]) is Point, 'Plane __init__(): args is not Points'
+        else:
+            assert not type(args[0]) is Point and\
+                   not type(args[1]) is Point, 'Plane __init__(): args is not Line and Point or Line and Line'
 
-        if args[0] == 'YZ':
-            self.__p.append(Point(0, 0, 0))
-            self.__p.append(Point(0, 1, 0))
-            self.__p.append(Point(0, 0, 1))
-            return
+        if type(args[0]) is Line and type(args[1]) is Line:
+            if not args[0].parallel(args[1]):
+                assert args[0].intersect_point(args[1]) is not None, 'Plane __init__(): no such plane'
+            assert args[0].coincide(args[1]), 'Plane __init__(): ambiguity definition'
+            self.__p[0] = args[0]
+            if not args[0][0] == args[1][0]:
+                self.__p[1] = args[1][0]
+            else:
+                self.__p[1] = args[1][1]
 
-        if args[0] == 'XZ':
-            self.__p.append(Point(0, 0, 0))
-            self.__p.append(Point(1, 0, 0))
-            self.__p.append(Point(0, 0, 1))
-            return
+        if type(args[0]) is Line and type(args[1]) is Point:
+            assert not args[0].coincide(args[1]), 'Plane __init__(): ambiguity definition'
+            self.__p[0] = args[0]
+            self.__p[1] = args[1]
 
-        if len(args[0]) == 3:
-            for v in args[0]:
-                self.__p.append(v)
+        if type(args[0]) is Point and type(args[1]) is Line:
+            assert not args[1].coincide(args[0]), 'Plane __init__(): ambiguity definition'
+            self.__p[0] = args[1]
+            self.__p[1] = args[0]
+
+        self.iterator = 0
 
         return
+
+    def __getitem__(self, item):
+        assert 0 <= item <= len(self)-1, 'Line __getitem__(): item is out f range'
+        return self.__p[item]
+
+    def __setitem__(self, key, value):
+        assert True, 'Line __setitem__(): operation not permitted'
+
+    def __delitem__(self, key):
+        assert True, 'Line __delitem__(): operation not permitted'
+
+    def __len__(self):
+        return len(self.__p)
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        if self.iterator <= len(self)-1:
+            self.iterator += 1
+            return self[self.iterator-1]
+        else:
+            self.iterator = 0
+            raise StopIteration
 
     def coincide(self, plane):
         (a0, b0, c0), d0 = self.abcd()
@@ -232,3 +265,13 @@ class Plane:
         d01 = Point(x2, y2, z2).distance(v)
 
         return not (gt(d01, d0) and gt(d01, d1))
+
+    def __str__(self):
+        s = '{'
+        for p in self:
+            if type(p) is Line:
+                s += 'l: '
+            if type(p) is Point:
+                s += 'p: '
+            s += str(p) + '  '
+        return s + '}'

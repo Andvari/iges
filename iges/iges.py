@@ -16,6 +16,16 @@ from vector import Vector
 filename = 'g-part.IGS'
 #filename = 'pyram.IGS'
 
+p1 = Point(0, 0, 0)
+p2 = Point(0, 0, 0)
+p3 = Point(0, 0, 0)
+
+l = Plane(Line(p1, p2), Line(p1, p3))
+
+print(l)
+
+exit()
+
 solid = Solid(filename, 0)
 solid_ = Solid(filename, 0)
 

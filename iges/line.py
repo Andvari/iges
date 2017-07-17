@@ -5,166 +5,71 @@ from radius_vector import RadiusVector
 
 class Line:
     def __init__(self, *args):
-
-        if args:
-            if type(args[0]) is Point:
-                a = args[0]
-            else:
-                raise ValueError('Line __init__(): args[0] is not Point')
-
-            if type(args[1]) is Point or type(args[1]) is RadiusVector:
-                b = args[1]
-            else:
-                raise ValueError('Line: args[1] is not Point or RadiusVector')
-
-        self._p = [a, b]
-        return
+        assert args, 'Line __init__(): Line without args'
+        assert type(args[0]) is Point, 'Line: __init__()args[0] is not Point'
+        assert type(args[1]) is Point or RadiusVector, 'Line __init__(): args[1] is not Point or RadiusVector'
+        self.__p = [args[0], args[1]]
 
     def point(self):
-        return self._p[0]
+        return self.__p[0]
 
     def vector(self):
-        if type(self._p[1]) is Point:
+        if type(self.__p[1]) is Point:
             return self[1] - self[0]
         return self[1]
 
     def __getitem__(self, item):
-        return self._p[item]
+        assert 0 <= item <= 1, 'Line __getitem__(): item is out f range'
+        return self.__p[item]
 
     def __setitem__(self, key, value):
-        raise ValueError('Line __setitem__(): operation not permitted')
+        assert True, 'Line __setitem__(): operation not permitted'
 
     def __delitem__(self, key):
-        raise ValueError('Line __delitem__(): operation not permitted')
-
-    '''
-    def belong(self, p: Vertex):
-
-        x, y, z = p
-        x0, y0, z0 = self.point()
-        dx, dy, dz = self.vector()
-
-        if dx and dy and dz:
-            if (x-x0)/dx == (y-y0)/dy and (y-y0)/dy == (z-z0)/dz:
-                return True
-            else:
-                return False
-
-        if not dx and dy and dz:
-            if x == x0 and (y - y0) / dy == (z - z0) / dz:
-                return True
-            else:
-                return False
-
-        if dx and not dy and dz:
-            if y == y0 and (x - x0) / dx == (z - z0) / dz:
-                return True
-            else:
-                return False
-
-        if dx and dy and not dz:
-            if z == z0 and (x - x0) / dx == (y - y0) / dy:
-                return True
-            else:
-                return False
-
-        if not dx and not dy and dz:
-            if x == x0 and y == y0:
-                return True
-            else:
-                return False
-
-        if not dx and dy and not dz:
-            if x == x0 and z == z0:
-                return True
-            else:
-                return False
-
-        if dx and not dy and not dz:
-            if y == y0 and z == z0:
-                return True
-            else:
-                return False
-
-        if not dx and not dy and not dz:
-            if x == x0 and y == y0 and z == z0:
-                return True
-            else:
-                return False
-    '''
+        assert True, 'Line __delitem__(): operation not permitted'
 
     def coincide(self, l):
+        assert type(l) is Line or Point, 'Edge coincide(): e not Line or Point'
 
-        x0, y0, z0 = self.point()
-        dx, dy, dz = self.vector()
-        xs, ys, zs = l.point()
-        xf, yf, zf = l.vector() + l.point()
+        if type(l) is Line:
+            return self.coincide(l[0]) and self.coincide(l[1])
+        else:
+            x0, y0, z0 = self.point()
+            dx, dy, dz = self.vector()
+            x, y, z = l
 
-        if dx and dy and dz:
-            if not (xs - x0)/dx == (ys - y0)/dy or not (ys - y0)/dy == (zs - z0)/dz:
-                return False
+        if dx:
+            if dy:
+                if dz:
+                    return (x-x0)/dx == (y-y0)/dy and (x-x0)/dx == (z-z0)/dz
+                else:
+                    return (x-x0)/dx == (y-y0)/dy and z == z0
+            else:
+                if dz:
+                    return (x-x0)/dx == (z-z0)/dz and y == y0
+                else:
+                    return y == y0 and z == z0
+        else:
+            if dy:
+                if dz:
+                    return (y-y0)/dy == (z-z0)/dz and x == x0
+                else:
+                    return x == x0 and z == z0
+            else:
+                if dz:
+                    return x == x0 and y == y0
+                else:
+                    return x == x0 and y == y0 and z == z0
 
-        if not dx and dy and dz:
-            if not xs == x0 or not (ys - y0)/dy == (zs-z0)/dz:
-                return False
+        raise ValueError('Line coincide(): unexpected error')
 
-        if dx and not dy and dz:
-            if not ys == y0 or not (xs - x0)/dx == (zs-z0)/dz:
-                return False
+    def intersect_point(self, l):
+        assert type(l) is Line, 'Line cross_point(): l is not Line'
+        if self.coincide(l) or self.parallel(l):
+            return None
 
-        if dx and dy and not dz:
-            if not zs == z0 or not (xs - x0)/dx == (ys-y0)/dy:
-                return False
-
-        if not dx and dy and dz:
-            if not xs == x0 or not (ys - y0)/dy == (zs-z0)/dz:
-                return False
-
-        if not dx and not dy and dz:
-            if not xs == x0 or not ys == y0:
-                return False
-
-        if not dx and dy and not dz:
-            if not xs == x0 or not zs == z0:
-                return False
-
-        if dx and not dy and not dz:
-            if not ys == y0 or not zs == z0:
-                return False
-
-        if dx and dy and dz:
-            if not (xf - x0)/dx == (yf - y0)/dy or not (yf - y0)/dy == (zf - z0)/dz:
-                return False
-
-        if not dx and dy and dz:
-            if not xf == x0 or not (yf - y0)/dy == (zf-z0)/dz:
-                return False
-
-        if dx and not dy and dz:
-            if not yf == y0 or not (xf - x0)/dx == (zf-z0)/dz:
-                return False
-
-        if dx and dy and not dz:
-            if not zf == z0 or not (xf - x0)/dx == (yf-y0)/dy:
-                return False
-
-        if not dx and dy and dz:
-            if not xf == x0 or not (yf - y0)/dy == (zf-z0)/dz:
-                return False
-
-        if not dx and not dy and dz:
-            if not xf == x0 or not yf == y0:
-                return False
-
-        if not dx and dy and not dz:
-            if not xf == x0 or not zf == z0:
-                return False
-
-        if dx and not dy and not dz:
-            if not yf == y0 or not zf == z0:
-                return False
-
-        return True
+    def parallel(self, l):
+        assert type(l) is Line, 'Line cross_point(): l is not Line'
 
     def gradient(self):
         g = []

@@ -2,34 +2,16 @@ from plane import Plane
 from entities import equ, ge, gt, le, lt, inside
 from line import Line
 from point import Point
+from vector import Vector
 
 
-class Edge:
-    def __init__(self, start: Point, end: Point):
-        self.__p = [start, end]
+class Edge(Line):
+    def __init__(self, p0, p1):
+        assert type(p0) is Point, 'Edge __init__(): p0 is not Point'
+        assert type(p1) is Point, 'Edge __init__(): p1 is not Point'
+        Line.__init__(p0, p1)
 
-    def update(self, *args):
-        if len(args) == 2:
-            self.__p[args[0]].update(args[1])
-            return
-
-        self.__p[args[0]].update(args[1], args[2])
-
-    def __getitem__(self, item):
-        return self.__p[item]
-
-    def __setitem__(self, key, value):
-        self.__p[key] = value
-
-    def __delitem__(self, key):
-        pass
-
-    def __str__(self):
-        l = 6 - len(str(self.__p[0])) % 6
-        s = ' '*2 + str(self.__p[0]) + ',' + ' '*l
-        s += str(self.__p[1])
-        return s
-
+    '''
     def image(self, p: Plane):
         x0 = 0
         y0 = 0
@@ -61,14 +43,18 @@ class Edge:
             for x in range(int(min(x0, x1)), int(max(x0, x1))+1):
                 img.append((float(x), y0))
             return img
+    '''
 
     def reverse(self):
-        return Edge(self.__p[1], self.__p[0])
+        t = self.__p[1]
+        self._[1] = self.__p[0]
+        self.__p[0] = t
 
     def __eq__(self, e):
-        return (self.point(0) == e.point(0) and self.point(1) == e.point(1)) or \
-               (self.point(0) == e.point(1) and self.point(1) == e.point(0))
+        assert type(e) is Edge, 'Edge __eq__(): e is not Edge'
+        return (self[0] == e[0] and self[1] == e[1]) or (self[0] == e[1] and self[1] == e[0])
 
+    '''
     def expand(self, way: [], bias: int):
         for c, s in way:
             if s == '+':
@@ -80,6 +66,7 @@ class Edge:
         for c, s in way:
             self.__p[0].update(c, bias)
             self.__p[1].update(c, bias)
+    '''
 
     '''
     def intersect(self, edge, plane):
@@ -191,47 +178,33 @@ class Edge:
 
         return empty
     '''
-    '''
-    def kb(self, a0, b0, a1, b1):
-        return
-    '''
-
-    def line(self):
-        return Line(self[0], self[1])
-
-    def middle(self):
-        return self[0].middle(self[1])
 
     def opposite_vertex(self, p):
+        assert type(p) is Point, 'Edge opposite_vertex(): p is not Point'
         if self[0] == p:
             return self[1]
-
         if self[1] == p:
             return self[0]
 
-        return None
+        raise ValueError('Edge opposite_vertex(): p is not on edge')
 
-    def is_inner_point(self, p: Point):
-        g = self.gradient()[0]
+    def is_inner__point(self, p):
+        assert type(p) is Point, 'Edge is_inner__point(): p is not point'
         p0, p1 = self
 
-        if not self.coincide(Edge(p0, p)):
+        if not self.coincide(p):
             return False
 
-        if (p[g] < p0[g] and p[g] < p1[g]) or (p[g] > p0[g] and p[g] > p1[g]):
-            return False
+        g = self.gradient()[0]
+        return p0[g] <= p[g] <= p1[g] or p1[g] <= p[g] <= p0[g]
 
-        return True
-
-    def intersect_point(self, param):
-        #l1 = Line(self.point(0), self.point(1).vector(self.point(1)))
+    def intersect__point(self, param):
+        assert type(param) is Edge or type(param) is Line, 'Edge intersect__point(): param not Edge or Line'
 
         if type(param) is Edge:
             l = param.line()
-        elif type(param) is Line:
-            l = param
         else:
-            raise ValueError('Edge intersect_point(): param not Edge or Line')
+            l = param
 
         x0, y0, z0 = self.line().point()
         x1, y1, z1 = l.point()
@@ -282,48 +255,36 @@ class Edge:
 
         return Point(x, y, z)
 
-    def gradient(self):
-        return self.line().gradient()
-
-    def dxdydz(self):
-        return self.__p[1] - self.__p[0]
-
-    def coincide(self, e):
-        return self.line().coincide(e.line())
-
-    def intersect_pieces(self, edges: []):
+    def intersect__pieces(self, edges: []):
         g = self.gradient()[0]
 
-        ss = self.point(0).value(g)
-        se = self.point(1).value(g)
+        ss = self[0][g]
+        se = self[1][g]
         pieces = []
         for e in edges:
-            ts = e.point(0).value(g)
-            te = e.point(1).value(g)
+            ts = e[0][g]
+            te = e[1][g]
 
             if ss >= te or se <= ts:
                 continue
 
             if ss >= ts:
-                ns = self.point(0)
+                ns = self[0]
             else:
-                ns = e.point(0)
+                ns = e[0]
 
             if se <= te:
-                ks = self.point(1)
+                ks = self[1]
             else:
-                ks = e.point(1)
+                ks = e[1]
 
             pieces.append(Edge(ns, ks))
 
         return pieces
 
     def sorted_along_gradient(self, g):
-        s = min(self.point(0).value(g), self.point(1).value(g))
-        e = max(self.point(0).value(g), self.point(1).value(g))
-        return s, e
+        assert 0 <= g <= 1, 'Edge sorted_along_gradient(): g is out of range'
+        return min(self[0][g], self[1][g]), max(self[1][g], self[0][g])
 
-    def middle(self):
-        p0 = self.__p[0]
-        p1 = self.__p[1]
-        return Point((p1['X'] - p0['X']) / 2, (p1['Y'] - p0['Y']) / 2, (p1['Z'] - p0['Z']) / 2)
+    def midpoint(self):
+        return self[0].midpoint(self[1])
