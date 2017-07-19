@@ -20,9 +20,10 @@ p1 = Point(0, 0, 0)
 p2 = Point(0, 0, 0)
 p3 = Point(0, 0, 0)
 
-l = Plane(Line(p1, p2), Line(p1, p3))
+l1 = Line(Point(0, 0, 0,), Point(1, 1, 1))
+l2 = Line(Point(0, 0, 0,), Point(1, 1, 1))
 
-print(l)
+print(l1.intersect_point(l2))
 
 exit()
 

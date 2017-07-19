@@ -1,22 +1,30 @@
 from point import Point
-#from vertex import Vertex
 from radius_vector import RadiusVector
 
 
 class Line:
     def __init__(self, *args):
-        assert args, 'Line __init__(): Line without args'
-        assert type(args[0]) is Point, 'Line: __init__()args[0] is not Point'
-        assert type(args[1]) is Point or RadiusVector, 'Line __init__(): args[1] is not Point or RadiusVector'
-        self.__p = [args[0], args[1]]
+        assert 1 <= len(args) <= 2, 'Line __init__(): bad arguments'
+
+        self.__p = []
+        if type(args[0]) is Point and type(args[1]) is Point:
+            self.__p.append(args[0])
+            self.__p.append(args[1])
+        elif type(args[0]) is Point and type(args[1]) is RadiusVector:
+            self.__p.append(args[0])
+            self.__p.append(args[0] + args[1])
+        elif type(args[0]) is RadiusVector and type(args[1]) is Point:
+            self.__p.append(args[1])
+            self.__p.append(args[1] + args[0])
+        else:
+            assert True, 'Line __init__(): bad arguments'
+        assert not self.__p[0] == self.__p[1], 'Line __init__(): no such line'
 
     def point(self):
-        return self.__p[0]
+        return self[0]
 
     def vector(self):
-        if type(self.__p[1]) is Point:
-            return self[1] - self[0]
-        return self[1]
+        return self[1] - self[0]
 
     def __getitem__(self, item):
         assert 0 <= item <= 1, 'Line __getitem__(): item is out f range'
@@ -29,47 +37,49 @@ class Line:
         assert True, 'Line __delitem__(): operation not permitted'
 
     def coincide(self, l):
-        assert type(l) is Line or Point, 'Edge coincide(): e not Line or Point'
+        assert type(l) is Line or Point, 'Edge coincide(): l not Line or Point'
 
         if type(l) is Line:
             return self.coincide(l[0]) and self.coincide(l[1])
         else:
             x0, y0, z0 = self.point()
             dx, dy, dz = self.vector()
-            x, y, z = l
-
-        if dx:
-            if dy:
-                if dz:
-                    return (x-x0)/dx == (y-y0)/dy and (x-x0)/dx == (z-z0)/dz
-                else:
-                    return (x-x0)/dx == (y-y0)/dy and z == z0
-            else:
-                if dz:
-                    return (x-x0)/dx == (z-z0)/dz and y == y0
-                else:
-                    return y == y0 and z == z0
-        else:
-            if dy:
-                if dz:
-                    return (y-y0)/dy == (z-z0)/dz and x == x0
-                else:
-                    return x == x0 and z == z0
-            else:
-                if dz:
-                    return x == x0 and y == y0
-                else:
-                    return x == x0 and y == y0 and z == z0
-
-        raise ValueError('Line coincide(): unexpected error')
+            t = self.t(l)
+            if Point(x0+dx*t, y0+dy*t, z0+dz*t) == l:
+                return True
+            return False
 
     def intersect_point(self, l):
         assert type(l) is Line, 'Line cross_point(): l is not Line'
-        if self.coincide(l) or self.parallel(l):
+
+        x0, y0, z0 = self.point()
+        dx0, dy0, dz0 = self.vector()
+
+        x1, y1, z1 = l.point()
+        dx1, dy1, dz1 = l.vector()
+
+        t = 0
+        if dy0*dx1 - dy1:
+            t = (y1-y0*dx0-dy0*(x1-x0))/(dy0*dx1-dy1)
+        elif dz0*dx1 - dz1:
+            t = (z1-z0*dx0-dz0*(x1-x0))/(dz0*dx1-dz1)
+        elif dx0*dy1 - dx1:
+            t = (x1-x0*dy0-dx0*(y1-y0))/(dx0*dy1-dx1)
+        elif dz0*dy1 - dz1:
+            t = (z1-z0*dy0-dz0*(y1-y0))/(dz0*dy1-dz1)
+        elif dx0*dz1 - dx1:
+            t = (x1-x0*dz0-dx0*(z1-z0))/(dx0*dz1-dx1)
+        elif dy0*dz1 - dy1:
+            t = (y1-y0*dz0-dy0*(z1-z0))/(dy0*dz1-dy1)
+        else:
             return None
 
-    def parallel(self, l):
-        assert type(l) is Line, 'Line cross_point(): l is not Line'
+        p = Point(x1+dx1*t, y1+dy1*t, z1+dz1*t)
+
+        if self.coincide(p) and l.coincide(p):
+            return p
+
+        return None
 
     def gradient(self):
         g = []
@@ -83,7 +93,14 @@ class Line:
         return g
 
     def __str__(self):
-        if type(self[1]) is Point:
-            return str(self[0]) + ', ' + str(self[1] - self[0])
-        else:
-            return str(self[0]) + ', ' + str(self[1])
+        return str(self.point()) + ', ' + str(self.vector())
+
+    def t(self, p):
+        if self.vector()[0]:
+            return (p[0] - self.point()[0])/self.vector()[0]
+        elif self.vector()[1]:
+            return (p[1] - self.point()[1])/self.vector()[1]
+        elif self.vector()[2]:
+            return (p[2] - self.point()[2])/self.vector()[2]
+
+        raise ValueError('Line t(): unexpected error')
